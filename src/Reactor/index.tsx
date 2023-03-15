@@ -1,34 +1,22 @@
-import { IReactionDisposer, reaction } from 'mobx';
+import { reaction } from 'mobx';
 import * as React from 'react';
-import { Store } from './Types';
+import { useEffect } from 'react';
 
-interface Props<State, S extends Store<State>> {
-  store: S;
+interface HasState<State> {
+  state: State;
 }
 
-abstract class Reactor<
-  S extends Store<any>,
-  State = S extends Store<infer T> ? T : never,
-> extends React.Component<Props<State, S>> {
-  public stop: IReactionDisposer | undefined;
+interface Props<Store> {
+  store: Store;
+}
 
-  constructor(props: Props<State, S>) {
-    super(props);
-  }
-
-  componentDidMount(): void {
-    this.stop = reaction(() => this.props.store.state, this.effect(this.props.store));
-  }
-
-  abstract effect: (store: S) => (state: State) => void;
-
-  componentWillUnmount(): void {
-    this.stop && this.stop();
-  }
-
-  render() {
+const Reactor =
+  <Store extends HasState<unknown>>(
+    effects: (store: Store) => (state: Store['state']) => void,
+  ): React.FC<Props<Store>> =>
+  ({ store }) => {
+    useEffect(reaction(() => store.state, effects(store)));
     return <></>;
-  }
-}
+  };
 
 export default Reactor;

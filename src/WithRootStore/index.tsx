@@ -22,9 +22,7 @@ const rootLink: Link = {
 const WithRoot: React.FC<Props> = ({ children }) => {
   const store = React.useRef(new RootStore());
 
-  React.useEffect(() => {
-    store.current.loading(rootLink);
-  });
+  React.useEffect(() => store.current.loading(rootLink));
 
   return (
     <>

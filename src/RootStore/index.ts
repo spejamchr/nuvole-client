@@ -3,9 +3,9 @@ import { assertNever } from '@/AssertNever';
 import { Link } from '@/Resource/Types';
 import { makeAutoObservable } from 'mobx';
 import { error, loading, ready, RootResource, State, waiting } from './Types';
-import { Store } from '@/Reactor/Types';
+import { HasState } from '@/Reactor/Types';
 
-class RootStore implements Store<State> {
+class RootStore implements HasState<State> {
   public state: State;
 
   constructor() {
