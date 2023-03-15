@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 const Home: React.FC<{}> = () => (
   <main className="prose prose-invert px-8 py-4">
     <title>Nuvole</title>
