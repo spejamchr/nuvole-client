@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 const Home: React.FC<{}> = () => (
   <main className="prose prose-invert px-8 py-4">
     <title>Nuvole</title>
@@ -14,6 +16,9 @@ const Home: React.FC<{}> = () => (
     </p>
     <p>
       Our client is completely open source, and we encourage others to implement their own clients.
+    </p>
+    <p>
+      <Link href="/app">Login here</Link>
     </p>
   </main>
 );
