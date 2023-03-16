@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@execonline-inc/appy": "^8.21.0",
+    "@execonline-inc/collections": "^10.7.0",
     "@execonline-inc/decoders": "^6.5.0",
     "@execonline-inc/resource": "^6.21.0",
     "@execonline-inc/url": "^8.2.0",

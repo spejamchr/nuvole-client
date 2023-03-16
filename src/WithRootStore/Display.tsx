@@ -1,22 +1,22 @@
 import RootStore from '@/RootStore';
-import { RootResource } from '@/RootStore/Types';
+import { Ready, RootResource, State } from '@/RootStore/Types';
 import { observer } from 'mobx-react-lite';
 import * as React from 'react';
 
 interface Props {
-  children: (rootResource: RootResource) => React.ReactElement;
+  ready: (rootResource: RootResource) => React.ReactElement;
+  other: (state: Exclude<State, Ready>) => React.ReactElement;
   store: RootStore;
 }
 
-const Display: React.FC<Props> = ({ children, store }) => {
+const Display: React.FC<Props> = ({ ready, other, store }) => {
   switch (store.state.kind) {
     case 'waiting':
     case 'loading':
-      return <p>Loading...</p>;
-    case 'ready':
-      return <>{children(store.state.resource)}</>;
     case 'error':
-      return <p>Could not load root store...</p>;
+      return <>{other(store.state)}</>;
+    case 'ready':
+      return <>{ready(store.state.resource)}</>;
   }
 };
 

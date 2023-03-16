@@ -1,4 +1,6 @@
+import { findR } from '@execonline-inc/collections';
 import { Link as LinkR, Resource as ResourceR } from '@execonline-inc/resource';
+import { Result } from 'resulty';
 
 export const rels = [
   'authenticate',
@@ -22,3 +24,15 @@ export type Rel = (typeof rels)[number];
 
 export type Link = LinkR<Rel>;
 export type Resource<T> = ResourceR<T, Rel>;
+
+export interface MissingLink {
+  kind: 'missing-link';
+  rel: Rel;
+}
+
+export const missingLink = (rel: Rel): MissingLink => ({ kind: 'missing-link', rel });
+
+export const findLink =
+  (rel: Rel) =>
+  (links: ReadonlyArray<Link>): Result<MissingLink, Link> =>
+    findR<Link>((link) => link.rel === rel)(links).mapError(() => missingLink(rel));
