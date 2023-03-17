@@ -2,7 +2,8 @@ import { AppyError } from '@/Appy';
 import { assertNever } from '@/AssertNever';
 import { Link } from '@/Resource/Types';
 import { makeAutoObservable } from 'mobx';
-import { error, loading, ready, RootResource, State, waiting } from './Types';
+import { err, ok, Result } from 'resulty';
+import { error, loading, Ready, ready, RootResource, State, waiting } from './Types';
 
 class RootStore {
   public state: State;
@@ -44,6 +45,17 @@ class RootStore {
   error = (appyError: AppyError) => {
     this.state = error(appyError);
   };
+
+  get resource(): Result<Exclude<State, Ready>, RootResource> {
+    switch (this.state.kind) {
+      case 'waiting':
+      case 'loading':
+      case 'error':
+        return err(this.state);
+      case 'ready':
+        return ok(this.state.resource);
+    }
+  }
 }
 
-export default RootStore;
+export const rootStore = new RootStore();

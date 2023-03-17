@@ -2,11 +2,11 @@ import { callApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
 import Reactor from '@/Reactor';
 import { rootResourceDecoder } from './Decoders';
-import RootStore from '.';
+import { rootStore } from '.';
 
 const fetchRoot = callApi(rootResourceDecoder, {});
 
-const Reactions = Reactor<RootStore>((store) => (state) => {
+const Reactions = Reactor<typeof rootStore>((store) => (state) => {
   switch (state.kind) {
     case 'waiting':
       break;
