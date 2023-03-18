@@ -3,6 +3,7 @@ import { assertNever } from '@/AssertNever';
 import Reactor from '@/Reactor';
 import { rootResourceDecoder } from './Decoders';
 import { rootStore } from '.';
+import { error } from '@/Logging';
 
 const fetchRoot = callApi(rootResourceDecoder, {});
 
@@ -14,7 +15,7 @@ const Reactions = Reactor<typeof rootStore>((store) => (state) => {
       fetchRoot(state.link).fork(store.error, store.ready);
       break;
     case 'error':
-      console.error('Error loading root uri', state.error.kind);
+      error('Error loading root uri', state.error.kind);
       break;
     case 'ready':
       break;

@@ -1,5 +1,6 @@
 import { callApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
+import { error } from '@/Logging';
 import Reactor from '@/Reactor';
 import { authenticationStore } from '.';
 import { userSessionResourceDecoder } from './Decoders';
@@ -22,7 +23,7 @@ const Reactions = Reactor<typeof authenticationStore>((store) => (state) => {
       );
       break;
     case 'authenticating-error':
-      console.error('Error authenticating', state.error.kind);
+      error('Error authenticating', state.error.kind);
       break;
     case 'authenticated':
       break;
