@@ -5,7 +5,7 @@ function Document() {
   return (
     <Html>
       <Head />
-      <body className="bg-gray-800 text-gray-200">
+      <body className="bg-gray-900 text-gray-200">
         <Main />
         <NextScript />
       </body>

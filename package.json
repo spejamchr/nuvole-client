@@ -25,6 +25,7 @@
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "ajaxian": "^4.7.0",
+    "clsx": "^1.2.1",
     "jsonous": "^7.7.0",
     "maybeasy": "^5.1.0",
     "mobx": "^6.8.0",

@@ -1,4 +1,5 @@
 import { authenticationStore } from '@/AuthenticationStore';
+import TextInput from '@/TextInput';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 
@@ -6,16 +7,20 @@ interface Props {}
 
 const Inputs: React.FC<Props> = ({}) => {
   return (
-    <>
-      <input
+    <div className={`w-96`}>
+      <div className={`w-full pb-4 text-lg text-gray-400`}>Login</div>
+      <TextInput
+        label="Email"
         value={authenticationStore.email}
-        onChange={(e) => authenticationStore.setEmail(e.target.value)}
+        onChange={authenticationStore.setEmail}
       />
-      <input
+      <TextInput
+        label="Password"
         value={authenticationStore.password}
-        onChange={(e) => authenticationStore.setPassword(e.target.value)}
+        onChange={authenticationStore.setPassword}
+        password
       />
-    </>
+    </div>
   );
 };
 
