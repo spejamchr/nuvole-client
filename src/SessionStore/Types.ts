@@ -10,7 +10,13 @@ export interface ReadingStorage {
   kind: 'reading-storage';
 }
 
-export type ReadError = GetItemError | FailedDecoder;
+export interface ExpiredSession {
+  kind: 'expired-session';
+}
+
+export const expiredSession = (): ExpiredSession => ({ kind: 'expired-session' });
+
+export type ReadError = GetItemError | FailedDecoder | ExpiredSession;
 
 export interface ReadingStorageError {
   kind: 'reading-storage-error';
@@ -39,6 +45,19 @@ export interface WritingSessionError {
   error: WriteError;
 }
 
+export interface RefreshingSession {
+  kind: 'refreshing-session';
+  session: UserSessionResource;
+}
+
+export type RefreshError = unknown;
+
+export interface RefreshingSessionError {
+  kind: 'refreshing-session-error';
+  session: UserSessionResource;
+  error: RefreshError;
+}
+
 export type State =
   | Waiting
   | ReadingStorage
@@ -46,7 +65,9 @@ export type State =
   | WithoutSession
   | WithSession
   | WritingSession
-  | WritingSessionError;
+  | WritingSessionError
+  | RefreshingSession
+  | RefreshingSessionError;
 
 export const waiting = (): Waiting => ({ kind: 'waiting' });
 
@@ -77,3 +98,19 @@ export const writingSessionError = (
   session,
   error,
 });
+
+export const refreshingSession = (session: UserSessionResource): RefreshingSession => ({
+  kind: 'refreshing-session',
+  session,
+});
+
+export const refreshingSessionError = (
+  session: UserSessionResource,
+  error: RefreshError,
+): RefreshingSessionError => ({ kind: 'refreshing-session-error', session, error });
+
+export interface NoCurrentSession {
+  kind: 'no-current-session';
+}
+
+export const noCurrentSession = (): NoCurrentSession => ({ kind: 'no-current-session' });

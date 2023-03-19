@@ -1,11 +1,15 @@
+import { callAuthenticatedApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
 import { authenticationStore } from '@/AuthenticationStore';
 import { userSessionResourceDecoder } from '@/AuthenticationStore/Decoders';
-import { andTry, fromJsonDecoder } from '@/CooperExt';
+import { whenActiveSession } from '@/AuthenticationStore/Types';
+import { andTryR, fromJsonDecoderR } from '@/CooperExt';
 import { error } from '@/Logging';
 import Reactor from '@/Reactor';
+import { findLinkT } from '@/Resource/Types';
 import { getItem, setItem } from '@/Storage';
 import { ok } from 'resulty';
+import Task from 'taskarian';
 import { sessionStore } from '.';
 import { ReadError } from './Types';
 
@@ -18,12 +22,14 @@ const handleMissingSession = (err: ReadError): void => {
       sessionStore.readingStorageError(err);
       break;
     case 'nullish':
+    case 'expired-session':
       sessionStore.withoutSession();
       break;
     default:
       assertNever(err);
   }
 };
+const refreshSession = callAuthenticatedApi(userSessionResourceDecoder, {});
 
 const Reactions = Reactor<typeof sessionStore>((store) => (state) => {
   switch (state.kind) {
@@ -32,7 +38,8 @@ const Reactions = Reactor<typeof sessionStore>((store) => (state) => {
     case 'reading-storage':
       ok<ReadError, string>(sessionLocation)
         .andThen(getItem)
-        .cata(andTry(fromJsonDecoder(userSessionResourceDecoder.decodeJson)))
+        .cata(andTryR(fromJsonDecoderR(userSessionResourceDecoder.decodeJson)))
+        .cata(andTryR(whenActiveSession))
         .cata({
           Ok: store.withSession,
           Err: handleMissingSession,
@@ -53,7 +60,16 @@ const Reactions = Reactor<typeof sessionStore>((store) => (state) => {
       });
       break;
     case 'writing-session-error':
-      error('Error writing session to storage:', state.error);
+      error('Error writing session to storage:', JSON.stringify(state.error));
+      break;
+    case 'refreshing-session':
+      Task.succeed(state.session.links)
+        .andThen(findLinkT('update'))
+        .andThen(refreshSession)
+        .fork(store.refreshingSessionError, store.writingSession);
+      break;
+    case 'refreshing-session-error':
+      error('Error refreshing session:', JSON.stringify(state.error));
       break;
     default:
       assertNever(state);

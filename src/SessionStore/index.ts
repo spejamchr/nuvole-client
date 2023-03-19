@@ -1,20 +1,25 @@
 import { assertNever } from '@/AssertNever';
-import { UserSessionResource } from '@/AuthenticationStore/Types';
+import { UserSessionResource, whenActiveSession } from '@/AuthenticationStore/Types';
 import { Nullish } from '@/CooperExt';
 import { logMisfiredState } from '@/LogMisfiredState';
-import { just, Maybe, nothing } from 'maybeasy';
 import { makeAutoObservable } from 'mobx';
+import { err, Result } from 'resulty';
 import {
-  readingStorage,
+  NoCurrentSession,
+  noCurrentSession,
   ReadError,
-  State,
+  readingStorage,
   readingStorageError,
+  RefreshError,
+  refreshingSession,
+  refreshingSessionError,
+  State,
   waiting,
-  withSession,
   withoutSession,
+  withSession,
+  WriteError,
   writingSession,
   writingSessionError,
-  WriteError,
 } from './Types';
 
 class SessionStore {
@@ -38,6 +43,8 @@ class SessionStore {
       case 'with-session':
       case 'writing-session':
       case 'writing-session-error':
+      case 'refreshing-session':
+      case 'refreshing-session-error':
         // noop
         break;
       default:
@@ -56,6 +63,8 @@ class SessionStore {
       case 'with-session':
       case 'writing-session':
       case 'writing-session-error':
+      case 'refreshing-session':
+      case 'refreshing-session-error':
         this.misfiredState('readingStorageError');
         break;
       default:
@@ -74,6 +83,8 @@ class SessionStore {
       case 'with-session':
       case 'writing-session':
       case 'writing-session-error':
+      case 'refreshing-session':
+      case 'refreshing-session-error':
         this.misfiredState('withoutSession');
         break;
       default:
@@ -84,6 +95,7 @@ class SessionStore {
   withSession = (session: UserSessionResource): void => {
     switch (this.state.kind) {
       case 'reading-storage':
+      case 'refreshing-session':
         this.state = withSession(session);
         break;
       case 'waiting':
@@ -92,6 +104,7 @@ class SessionStore {
       case 'with-session':
       case 'writing-session':
       case 'writing-session-error':
+      case 'refreshing-session-error':
         this.misfiredState('withSession');
         break;
       default:
@@ -110,6 +123,8 @@ class SessionStore {
       case 'without-session':
       case 'with-session':
       case 'writing-session-error':
+      case 'refreshing-session':
+      case 'refreshing-session-error':
         this.misfiredState('finishedWritingSession');
         break;
       default:
@@ -124,6 +139,8 @@ class SessionStore {
       case 'reading-storage-error':
       case 'writing-session-error':
       case 'reading-storage':
+      case 'refreshing-session':
+      case 'refreshing-session-error':
         // The writingSession transition can happen at any time from the AuthenticationStore
         this.state = writingSession(session);
         break;
@@ -151,6 +168,8 @@ class SessionStore {
       case 'without-session':
       case 'with-session':
       case 'writing-session-error':
+      case 'refreshing-session':
+      case 'refreshing-session-error':
         this.misfiredState('writingSession');
         break;
       default:
@@ -158,19 +177,63 @@ class SessionStore {
     }
   };
 
-  get session(): Maybe<UserSessionResource> {
+  refreshingSession = (): void => {
+    switch (this.state.kind) {
+      case 'with-session':
+      case 'writing-session':
+      case 'writing-session-error':
+      case 'refreshing-session-error':
+        this.state = refreshingSession(this.state.session);
+        break;
+      case 'refreshing-session':
+        // Noop
+        break;
+      case 'waiting':
+      case 'reading-storage':
+      case 'reading-storage-error':
+      case 'without-session':
+        this.misfiredState('refreshingSession');
+        break;
+      default:
+        assertNever(this.state);
+    }
+  };
+
+  refreshingSessionError = (error: RefreshError): void => {
+    switch (this.state.kind) {
+      case 'refreshing-session':
+        this.state = refreshingSessionError(this.state.session, error);
+        break;
+      case 'waiting':
+      case 'reading-storage':
+      case 'reading-storage-error':
+      case 'without-session':
+      case 'with-session':
+      case 'writing-session':
+      case 'writing-session-error':
+      case 'refreshing-session-error':
+        this.misfiredState('refreshingSessionError');
+        break;
+      default:
+        assertNever(this.state);
+    }
+  };
+
+  session = (): Result<NoCurrentSession, UserSessionResource> => {
     switch (this.state.kind) {
       case 'waiting':
       case 'reading-storage':
       case 'reading-storage-error':
       case 'without-session':
-        return nothing();
+        return err(noCurrentSession());
       case 'with-session':
       case 'writing-session':
       case 'writing-session-error':
-        return just(this.state.session);
+      case 'refreshing-session':
+      case 'refreshing-session-error':
+        return whenActiveSession(this.state.session).mapError(noCurrentSession);
     }
-  }
+  };
 }
 
 export const sessionStore = new SessionStore();

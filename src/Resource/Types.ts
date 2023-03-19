@@ -1,5 +1,7 @@
+import { resultToTask } from '@/CooperExt';
 import { findR } from '@execonline-inc/collections';
 import { Link as LinkR, Resource as ResourceR } from '@execonline-inc/resource';
+import { always, pipe } from '@kofno/piper';
 import { Result } from 'resulty';
 
 export const rels = [
@@ -36,3 +38,5 @@ export const findLink =
   (rel: Rel) =>
   (links: ReadonlyArray<Link>): Result<MissingLink, Link> =>
     findR<Link>((link) => link.rel === rel)(links).mapError(() => missingLink(rel));
+
+export const findLinkT = (rel: Rel) => pipe(findLink(rel), always, resultToTask);

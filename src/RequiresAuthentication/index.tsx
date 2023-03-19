@@ -21,9 +21,12 @@ const RequiresAuthentication: React.FC<Props> = ({ children }) => {
     <>
       <RootReactions store={rootStore} />
       <SessionReactions store={sessionStore} />
-      {sessionStore.session.map(children).getOrElse(() => (
-        <Authentication />
-      ))}
+      {sessionStore
+        .session()
+        .map(children)
+        .getOrElse(() => (
+          <Authentication />
+        ))}
     </>
   );
 };

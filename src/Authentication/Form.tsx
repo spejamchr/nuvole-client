@@ -2,7 +2,7 @@ import { findLink } from '@/Resource/Types';
 import { rootStore } from '@/RootStore';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { andTry } from '@/CooperExt';
+import { andTryR } from '@/CooperExt';
 import { authenticationStore } from '@/AuthenticationStore';
 import Button from '@/Button';
 import ErrorMsg from './ErrorMsg';
@@ -17,7 +17,7 @@ const Form: React.FC<Props> = ({}) => (
       e.preventDefault();
       rootStore.resource
         .map((r) => r.links)
-        .cata(andTry(findLink('authenticate')))
+        .cata(andTryR(findLink('authenticate')))
         .do(authenticationStore.authenticating);
     }}
   >

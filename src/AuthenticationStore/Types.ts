@@ -1,6 +1,9 @@
 import { AppyError } from '@/Appy';
+import { fromBooleanR } from '@/CooperExt';
 import { Link, Resource } from '@/Resource/Types';
+import { expiredSession, ExpiredSession } from '@/SessionStore/Types';
 import { fromEmpty, just } from 'maybeasy';
+import { Result } from 'resulty';
 
 export interface AuthenticationPayload {
   email: string;
@@ -34,8 +37,20 @@ export interface AuthenticatingError {
 
 export interface UserSession {
   jwt: string;
-  expires: string;
+  expires: Date;
+  lifetimeInMs: number;
 }
+
+export const userSessionActive = ({ expires }: UserSession): boolean =>
+  expires.valueOf() > new Date().valueOf();
+
+export const whenActiveSession = (
+  resource: UserSessionResource,
+): Result<ExpiredSession, UserSessionResource> =>
+  fromBooleanR(userSessionActive(resource.payload), resource).mapError(expiredSession);
+
+export const sessionExpiringSoon = ({ expires, lifetimeInMs }: UserSession): boolean =>
+  expires.valueOf() - new Date().valueOf() < lifetimeInMs / 2;
 
 export type UserSessionResource = Resource<UserSession>;
 
