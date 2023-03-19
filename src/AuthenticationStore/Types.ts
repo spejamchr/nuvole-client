@@ -26,8 +26,9 @@ export interface Authenticating extends AuthenticationPayload {
 
 export type AuthenticationError = AppyError;
 
-export interface AuthenticatingError extends AuthenticationPayload {
+export interface AuthenticatingError {
   kind: 'authenticating-error';
+  email: string;
   error: AuthenticationError;
 }
 
@@ -88,11 +89,9 @@ export const authenticating = (
 export const authenticatingError = (
   error: AuthenticationError,
   email: string,
-  password: string,
 ): AuthenticatingError => ({
   kind: 'authenticating-error',
   email,
-  password,
   error,
 });
 

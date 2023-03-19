@@ -46,8 +46,10 @@ class AuthenticationStore {
     switch (this.state.kind) {
       case 'form-entry':
       case 'form-ready':
-      case 'authenticating-error':
         this.state = usingForm(email, this.state.password);
+        break;
+      case 'authenticating-error':
+        this.state = usingForm(email, '');
         break;
       case 'waiting':
       case 'authenticating':
@@ -96,7 +98,7 @@ class AuthenticationStore {
   authenticatingError = (error: AuthenticationError): void => {
     switch (this.state.kind) {
       case 'authenticating':
-        this.state = authenticatingError(error, this.state.email, this.state.password);
+        this.state = authenticatingError(error, this.state.email);
         break;
       case 'waiting':
       case 'form-ready':
@@ -147,11 +149,11 @@ class AuthenticationStore {
     switch (this.state.kind) {
       case 'waiting':
       case 'authenticated':
+      case 'authenticating-error':
         return '';
       case 'authenticating':
       case 'form-ready':
       case 'form-entry':
-      case 'authenticating-error':
         return this.state.password;
     }
   }
