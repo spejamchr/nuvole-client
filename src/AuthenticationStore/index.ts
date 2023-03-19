@@ -157,6 +157,32 @@ class AuthenticationStore {
         return this.state.password;
     }
   }
+
+  get editable(): boolean {
+    switch (this.state.kind) {
+      case 'form-entry':
+      case 'form-ready':
+      case 'authenticating-error':
+        return true;
+      case 'waiting':
+      case 'authenticated':
+      case 'authenticating':
+        return false;
+    }
+  }
+
+  get submittable(): boolean {
+    switch (this.state.kind) {
+      case 'form-ready':
+        return true;
+      case 'waiting':
+      case 'authenticated':
+      case 'authenticating-error':
+      case 'authenticating':
+      case 'form-entry':
+        return false;
+    }
+  }
 }
 
 export const authenticationStore = new AuthenticationStore();

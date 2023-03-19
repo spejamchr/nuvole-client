@@ -4,8 +4,9 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { andTry } from '@/CooperExt';
 import { authenticationStore } from '@/AuthenticationStore';
-import Inputs from './Inputs';
 import Button from '@/Button';
+import ErrorMsg from './ErrorMsg';
+import TextInput from '@/TextInput';
 
 interface Props {}
 
@@ -20,9 +21,27 @@ const Form: React.FC<Props> = ({}) => (
         .do(authenticationStore.authenticating);
     }}
   >
-    <Inputs />
-    <div className={'mt-4 flex flex-col'}>
-      <Button>Submit</Button>
+    <div className={`flex place-items-end justify-between`}>
+      <div className={`pb-4 pr-4 text-lg text-gray-200`}>Login</div>
+      <ErrorMsg />
+    </div>
+    <div className={`w-96`}>
+      <TextInput
+        label="Email"
+        value={authenticationStore.email}
+        onChange={authenticationStore.setEmail}
+        inputProps={{ disabled: !authenticationStore.editable }}
+      />
+      <TextInput
+        label="Password"
+        value={authenticationStore.password}
+        onChange={authenticationStore.setPassword}
+        inputProps={{ disabled: !authenticationStore.editable }}
+        password
+      />
+      <div className={'mt-4 flex flex-col'}>
+        <Button disabled={!authenticationStore.submittable}>Submit</Button>
+      </div>
     </div>
   </form>
 );
