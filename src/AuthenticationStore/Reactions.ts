@@ -1,13 +1,17 @@
 import { callApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
+import { sessionStore } from '@/SessionStore';
 import { error } from '@/Logging';
 import Reactor from '@/Reactor';
 import { authenticationStore } from '.';
 import { userSessionResourceDecoder } from './Decoders';
-import { AuthenticationPayload } from './Types';
+import { Authenticating, AuthenticationPayload, UserSessionResource } from './Types';
 
-const authenticate = (payload: AuthenticationPayload) =>
-  callApi(userSessionResourceDecoder, payload);
+const authenticate = ({ email, password, submitTo }: Authenticating) =>
+  callApi<UserSessionResource, AuthenticationPayload>(userSessionResourceDecoder, {
+    email,
+    password,
+  })(submitTo);
 
 const Reactions = Reactor<typeof authenticationStore>((store) => (state) => {
   switch (state.kind) {
@@ -17,15 +21,13 @@ const Reactions = Reactor<typeof authenticationStore>((store) => (state) => {
     case 'form-ready':
       break;
     case 'authenticating':
-      authenticate({ email: state.email, password: state.password })(state.submitTo).fork(
-        store.authenticatingError,
-        store.authenticated,
-      );
+      authenticate(state).fork(store.authenticatingError, store.authenticated);
       break;
     case 'authenticating-error':
       error('Error authenticating', state.error.kind);
       break;
     case 'authenticated':
+      sessionStore.writingSession(state.session);
       break;
     default:
       assertNever(state);

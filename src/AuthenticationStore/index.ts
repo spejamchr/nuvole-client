@@ -113,14 +113,17 @@ class AuthenticationStore {
   authenticated = (session: UserSessionResource): void => {
     switch (this.state.kind) {
       case 'authenticating':
-        this.state = authenticated(session);
-        break;
       case 'waiting':
       case 'form-ready':
       case 'form-entry':
       case 'authenticating-error':
+        // The authenticated transition can happen any time from the SessionStore
+        this.state = authenticated(session);
+        break;
       case 'authenticated':
-        this.misfiredState('authenticated');
+        if (this.state.session.payload.jwt !== session.payload.jwt) {
+          this.state = authenticated(session);
+        }
         break;
       default:
         assertNever(this.state);
@@ -130,14 +133,13 @@ class AuthenticationStore {
   get email(): string {
     switch (this.state.kind) {
       case 'waiting':
+      case 'authenticated':
         return '';
       case 'authenticating':
       case 'form-ready':
       case 'form-entry':
       case 'authenticating-error':
         return this.state.email;
-      case 'authenticated':
-        return this.state.session.payload.email;
     }
   }
 

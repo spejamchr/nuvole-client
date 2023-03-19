@@ -1,9 +1,10 @@
 import { AppyError } from '@/Appy';
 import { assertNever } from '@/AssertNever';
-import { Link } from '@/Resource/Types';
 import { makeAutoObservable } from 'mobx';
 import { err, ok, Result } from 'resulty';
 import { error, loading, Ready, ready, RootResource, State, waiting } from './Types';
+
+const rootHref = 'http://localhost:3000/root.json';
 
 class RootStore {
   public state: State;
@@ -13,10 +14,15 @@ class RootStore {
     makeAutoObservable(this);
   }
 
-  loading = (link: Link) => {
+  loading = () => {
     switch (this.state.kind) {
       case 'waiting':
-        this.state = loading(link);
+        this.state = loading({
+          rel: 'self',
+          href: rootHref,
+          method: 'get',
+          type: 'application/json',
+        });
         break;
       case 'loading':
       case 'ready':

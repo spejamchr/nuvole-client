@@ -4,7 +4,6 @@ import { UserSession, UserSessionResource } from './Types';
 
 export const userSessionDecoder: Decoder<UserSession> = succeed({})
   .assign('jwt', field('jwt', string))
-  .assign('email', field('email', string))
   .assign('expires', field('expires', string));
 
 export const userSessionResourceDecoder: Decoder<UserSessionResource> =

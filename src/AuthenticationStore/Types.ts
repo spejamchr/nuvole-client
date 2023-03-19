@@ -33,7 +33,6 @@ export interface AuthenticatingError extends AuthenticationPayload {
 
 export interface UserSession {
   jwt: string;
-  email: string;
   expires: string;
 }
 

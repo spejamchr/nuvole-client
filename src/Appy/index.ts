@@ -17,6 +17,6 @@ export const request = <T>(link: Link, decoder: Decoder<T>, payload: {}): Reques
   });
 
 export const callApi =
-  <T>(decoder: Decoder<T>, payload: {}) =>
+  <T, Payload extends {} = {}>(decoder: Decoder<T>, payload: Payload) =>
   (link: Link): Task<HttpError, T> =>
     toHttpResponseTask(request(link, decoder, payload)).map((s) => s.result);
