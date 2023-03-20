@@ -8,7 +8,7 @@ interface Props {
   onTimeout: () => void;
 }
 
-const alertLengthMs = 6_000;
+const alertLengthMs = 60_000;
 
 class AlertTimeoutManager extends React.Component<Props> {
   timeoutHandles: Array<number> = [];
