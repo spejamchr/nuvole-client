@@ -179,7 +179,6 @@ class SessionStore {
   };
 
   refreshingSession = (): void => {
-    console.log(`[SJC] refreshingSession with [${this.state.kind}]`);
     switch (this.state.kind) {
       case 'with-session':
       case 'writing-session':
