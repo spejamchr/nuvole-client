@@ -1,6 +1,7 @@
 import { assertNever } from '@/AssertNever';
 import { logMisfiredState } from '@/LogMisfiredState';
 import { Link } from '@/Resource/Types';
+import { sessionStore } from '@/SessionStore';
 import { makeAutoObservable } from 'mobx';
 import {
   authenticated,
@@ -36,6 +37,24 @@ class AuthenticationStore {
       case 'authenticating-error':
       case 'authenticated':
         // noop
+        break;
+      default:
+        assertNever(this.state);
+    }
+  };
+
+  logout = (): void => {
+    switch (this.state.kind) {
+      case 'authenticating':
+      case 'authenticated':
+        this.state = formEntry();
+        sessionStore.logout();
+        break;
+      case 'waiting':
+      case 'form-entry':
+      case 'form-ready':
+      case 'authenticating-error':
+        this.misfiredState('logout');
         break;
       default:
         assertNever(this.state);

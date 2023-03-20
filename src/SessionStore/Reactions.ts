@@ -7,7 +7,7 @@ import { andTryR, fromJsonDecoderR } from '@/CooperExt';
 import { error } from '@/Logging';
 import Reactor from '@/Reactor';
 import { findLinkT } from '@/Resource/Types';
-import { getItem, setItem } from '@/Storage';
+import { getItem, removeItem, setItem } from '@/Storage';
 import { ok } from 'resulty';
 import Task from 'taskarian';
 import { sessionStore } from '.';
@@ -46,6 +46,7 @@ const Reactions = Reactor<typeof sessionStore>((store) => (state) => {
         });
       break;
     case 'without-session':
+      removeItem(sessionLocation);
       break;
     case 'reading-storage-error':
       error('Error reading session from storage:', JSON.stringify(state.error));

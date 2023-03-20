@@ -1,9 +1,10 @@
 import { assertNever } from '@/AssertNever';
+import { authenticationStore } from '@/AuthenticationStore';
 import { UserSessionResource, whenActiveSession } from '@/AuthenticationStore/Types';
 import { Nullish } from '@/CooperExt';
 import { logMisfiredState } from '@/LogMisfiredState';
 import { makeAutoObservable } from 'mobx';
-import { err, Result } from 'resulty';
+import { err, ok, Result } from 'resulty';
 import {
   NoCurrentSession,
   noCurrentSession,
@@ -219,6 +220,27 @@ class SessionStore {
     }
   };
 
+  logout = (): void => {
+    switch (this.state.kind) {
+      case 'waiting':
+      case 'reading-storage':
+      case 'with-session':
+      case 'writing-session':
+      case 'writing-session-error':
+      case 'refreshing-session':
+      case 'refreshing-session-error':
+        this.state = withoutSession();
+        authenticationStore.logout();
+        break;
+      case 'reading-storage-error':
+      case 'without-session':
+        this.misfiredState('logout');
+        break;
+      default:
+        assertNever(this.state);
+    }
+  };
+
   session = (): Result<NoCurrentSession, UserSessionResource> => {
     switch (this.state.kind) {
       case 'waiting':
@@ -234,6 +256,22 @@ class SessionStore {
         return whenActiveSession(this.state.session).mapError(noCurrentSession);
     }
   };
+
+  get sessionExpiration(): Result<NoCurrentSession, Date> {
+    switch (this.state.kind) {
+      case 'waiting':
+      case 'reading-storage':
+      case 'reading-storage-error':
+      case 'without-session':
+        return err(noCurrentSession());
+      case 'with-session':
+      case 'writing-session':
+      case 'writing-session-error':
+      case 'refreshing-session':
+      case 'refreshing-session-error':
+        return ok(this.state.session.payload.expires);
+    }
+  }
 }
 
 export const sessionStore = new SessionStore();
