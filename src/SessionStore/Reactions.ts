@@ -32,6 +32,7 @@ const handleMissingSession = (err: ReadError): void => {
 const refreshSession = callAuthenticatedApi(userSessionResourceDecoder, {});
 
 const Reactions = Reactor<typeof sessionStore>((store) => (state) => {
+  console.log(`[SJC] Session Reactions with [${state.kind}]`);
   switch (state.kind) {
     case 'waiting':
       break;
@@ -64,9 +65,13 @@ const Reactions = Reactor<typeof sessionStore>((store) => (state) => {
       error('Error writing session to storage:', JSON.stringify(state.error));
       break;
     case 'refreshing-session':
+      console.log(`[SJC] refreshing-session reaction`);
       Task.succeed(state.session.links)
+        .do(() => console.log(`[SJC] have links`))
         .andThen(findLinkT('update'))
+        .do(() => console.log(`[SJC] found update link`))
         .andThen(refreshSession)
+        .do(() => console.log(`[SJC] called refreshed session endpoint`))
         .fork(store.refreshingSessionError, store.writingSession);
       break;
     case 'refreshing-session-error':

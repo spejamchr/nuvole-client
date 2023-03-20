@@ -29,7 +29,7 @@ export const callApi =
 export const withActiveSession = resultToTask(sessionStore.session);
 
 export const authHeader = (session: UserSessionResource): Header => ({
-  field: 'Authentication',
+  field: 'Authorization',
   value: `Bearer ${session.payload.jwt}`,
 });
 
@@ -43,9 +43,14 @@ export const callAuthenticatedApi =
   <T, Payload extends {} = {}>(decoder: Decoder<T>, payload: Payload) =>
   (link: Link): Task<NoCurrentSession | HttpError, T> =>
     withActiveSession
+      .do(() => console.log(`[SJC] have active session`))
       .mapError<NoCurrentSession | HttpError>(identity)
       .do(({ payload }) => triggerSessionRefreshIfExpiringSoon(payload))
+      .do(() => console.log(`[SJC] triggered session refresh...?`))
       .map(authHeader)
-      .map(request(link, decoder, payload).withHeader)
-      .andThen(toHttpResponseTask)
+      .do(() => console.log(`[SJC] mapped to auth header`))
+      .map((header) => request(link, decoder, payload).withHeader(header))
+      .do(() => console.log(`[SJC] mapped to request`))
+      .andThen((request) => toHttpResponseTask(request))
+      .do(() => console.log(`[SJC] sent http request`))
       .map((s) => s.result);
