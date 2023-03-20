@@ -41,8 +41,10 @@ export interface UserSession {
   lifetimeInMs: number;
 }
 
-export const userSessionActive = ({ expires }: UserSession): boolean =>
-  expires.valueOf() > new Date().valueOf();
+export const sessionLifetimeMs = ({ expires }: { expires: Date }): number =>
+  expires.valueOf() - new Date().valueOf();
+
+export const userSessionActive = (session: UserSession): boolean => sessionLifetimeMs(session) > 0;
 
 export const whenActiveSession = (
   resource: UserSessionResource,
