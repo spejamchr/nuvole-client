@@ -2,7 +2,7 @@ import { authenticationStore } from '@/AuthenticationStore';
 import Reactions from '@/AuthenticationStore/Reactions';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import Display from './Display';
+import Form from './Form';
 
 interface Props {}
 
@@ -12,7 +12,7 @@ const Authentication: React.FC<Props> = () => {
   return (
     <>
       <Reactions store={authenticationStore} />
-      <Display />
+      <Form />
     </>
   );
 };

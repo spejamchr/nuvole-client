@@ -23,7 +23,7 @@ const errorMessge = (state: AuthenticatingError): string => {
   }
 };
 
-const ErrorMsg: React.FC<Props> = ({}) => {
+const ErrorMsg: React.FC<Props> = () => {
   switch (authenticationStore.state.kind) {
     case 'waiting':
     case 'form-entry':

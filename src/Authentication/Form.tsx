@@ -10,7 +10,7 @@ import TextInput from '@/TextInput';
 
 interface Props {}
 
-const Form: React.FC<Props> = ({}) => (
+const Form: React.FC<Props> = () => (
   <form
     className={`m-8 w-fit bg-gray-800 p-8`}
     onSubmit={(e) => {

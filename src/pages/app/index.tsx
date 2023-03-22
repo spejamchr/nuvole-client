@@ -4,16 +4,14 @@ import * as React from 'react';
 
 const App: React.FC<{}> = () => {
   return (
-    <div>
-      <RequiresAuthentication>
-        {(session) => (
-          <>
-            <h1>Nuvole</h1>
-            <div>{JSON.stringify(session)}</div>
-          </>
-        )}
-      </RequiresAuthentication>
-    </div>
+    <RequiresAuthentication>
+      {(session) => (
+        <>
+          <h1>Nuvole</h1>
+          <div>{JSON.stringify(session)}</div>
+        </>
+      )}
+    </RequiresAuthentication>
   );
 };
 
