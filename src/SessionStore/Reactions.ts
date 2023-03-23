@@ -1,7 +1,10 @@
 import { callAuthenticatedApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
 import { authenticationStore } from '@/AuthenticationStore';
-import { userSessionResourceDecoder } from '@/AuthenticationStore/Decoders';
+import {
+  cachedUserSessionResourceDecoder,
+  userSessionResourceDecoder,
+} from '@/AuthenticationStore/Decoders';
 import { whenActiveSession } from '@/AuthenticationStore/Types';
 import { andTryR, fromJsonDecoderR } from '@/CooperExt';
 import { error } from '@/Logging';
@@ -38,7 +41,7 @@ const Reactions = Reactor<typeof sessionStore>((store) => (state) => {
     case 'reading-storage':
       ok<ReadError, string>(sessionLocation)
         .andThen(getItem)
-        .cata(andTryR(fromJsonDecoderR(userSessionResourceDecoder.decodeJson)))
+        .cata(andTryR(fromJsonDecoderR(cachedUserSessionResourceDecoder.decodeJson)))
         .cata(andTryR(whenActiveSession))
         .cata({
           Ok: store.withSession,

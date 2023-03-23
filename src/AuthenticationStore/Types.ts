@@ -37,12 +37,12 @@ export interface AuthenticatingError {
 
 export interface UserSession {
   jwt: string;
-  expires: Date;
+  expiresAt: Date;
   lifetimeInMs: number;
 }
 
-export const sessionLifetimeMs = ({ expires }: { expires: Date }): number =>
-  expires.valueOf() - new Date().valueOf();
+export const sessionLifetimeMs = ({ expiresAt }: { expiresAt: Date }): number =>
+  expiresAt.valueOf() - new Date().valueOf();
 
 export const userSessionActive = (session: UserSession): boolean => sessionLifetimeMs(session) > 0;
 
@@ -51,8 +51,8 @@ export const whenActiveSession = (
 ): Result<ExpiredSession, UserSessionResource> =>
   fromBooleanR(userSessionActive(resource.payload), resource).mapError(expiredSession);
 
-export const sessionExpiringSoon = ({ expires, lifetimeInMs }: UserSession): boolean =>
-  expires.valueOf() - new Date().valueOf() < lifetimeInMs / 2;
+export const sessionExpiringSoon = ({ expiresAt, lifetimeInMs }: UserSession): boolean =>
+  expiresAt.valueOf() - new Date().valueOf() < lifetimeInMs / 2;
 
 export type UserSessionResource = Resource<UserSession>;
 

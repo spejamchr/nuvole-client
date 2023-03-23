@@ -9,7 +9,7 @@ interface Props {
 }
 
 const timeLeftMs = (session: UserSession): number =>
-  session.expires.valueOf() - new Date().valueOf();
+  session.expiresAt.valueOf() - new Date().valueOf();
 
 const SessionAlert: React.FC<Props> = ({ session }) => {
   const [timeLeft, setTimeLeft] = React.useState(timeLeftMs(session));

@@ -8,7 +8,7 @@ interface Props {
 }
 
 const SessionExpirationAlerter: React.FC<Props> = ({ session }) => (
-  <Display key={session.expires.valueOf()} session={session} />
+  <Display key={session.expiresAt.valueOf()} session={session} />
 );
 
 export default observer(SessionExpirationAlerter);

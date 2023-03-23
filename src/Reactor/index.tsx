@@ -15,7 +15,7 @@ const Reactor =
     effects: (store: Store) => (state: Store['state']) => void,
   ): React.FC<Props<Store>> =>
   ({ store }) => {
-    useEffect(() => reaction(() => store.state, effects(store)));
+    useEffect(() => reaction(() => store.state, effects(store), { fireImmediately: true }));
     return <></>;
   };
 

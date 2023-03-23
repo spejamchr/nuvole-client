@@ -269,7 +269,7 @@ class SessionStore {
       case 'writing-session-error':
       case 'refreshing-session':
       case 'refreshing-session-error':
-        return ok(this.state.session.payload.expires);
+        return ok(this.state.session.payload.expiresAt);
     }
   }
 }
