@@ -1,5 +1,6 @@
 import { UserSessionResource } from '@/AuthenticationStore/Types';
 import { CurrentUserResource } from '@/CurrentUserStore/Types';
+import UnknownPath from '@/UnknownPath';
 import { observer } from 'mobx-react';
 import { useRouter } from 'next/router';
 import * as React from 'react';
@@ -18,15 +19,7 @@ const AuthorizedRouter: React.FC<Props> = ({ currentUser }) => {
     case 'journals':
       return <Journals currentUser={currentUser} />;
     default:
-      return (
-        <div className="px-16 py-12 text-gray-200">
-          <span>
-            <span className={`px-6`}>Error</span>
-            <span>|</span>
-            <span className={`px-6`}>Unknown path</span>
-          </span>
-        </div>
-      );
+      return <UnknownPath />;
   }
 };
 
