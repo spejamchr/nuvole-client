@@ -1,26 +1,28 @@
 import { CurrentUserResource } from '@/CurrentUserStore/Types';
+import ReadStore from '@/ReadStore';
+import ReadStoreReactions from '@/ReadStore/Reactions';
 import { findLink } from '@/Resource/Types';
-import UserJournalsStore from '@/UserJournalsStore';
-import UserJournalsStoreReactions from '@/UserJournalsStore/Reactions';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ok } from 'resulty';
+import { userJournalsPayloadDecoder } from './Decoder';
+import { UserJournalsPayload } from './Types';
 
 interface Props {
   currentUser: CurrentUserResource;
 }
 
 const Journals: React.FC<Props> = ({ currentUser }) => {
-  const journalsStore = React.useRef(new UserJournalsStore());
+  const store = React.useRef(new ReadStore<UserJournalsPayload>());
 
   React.useEffect(() => {
-    ok(currentUser.links).andThen(findLink('journals')).do(journalsStore.current.loading);
+    ok(currentUser.links).andThen(findLink('journals')).do(store.current.loading);
   }, []);
 
   return (
     <>
-      <UserJournalsStoreReactions store={journalsStore.current} />
-      <code>{JSON.stringify(journalsStore.current.state)}</code>
+      <ReadStoreReactions store={store.current} decoder={userJournalsPayloadDecoder} />
+      <code>{JSON.stringify(store.current.state)}</code>
     </>
   );
 };

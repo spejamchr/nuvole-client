@@ -3,18 +3,6 @@ import { FailedDecoder } from '@/CooperExt';
 import { Link, Resource } from '@/Resource/Types';
 import { NoCurrentSession } from '@/SessionStore/Types';
 
-export interface JournalPayload {
-  title: string;
-}
-
-export type JournalResource = Resource<JournalPayload>;
-
-export interface UserJournalsPayload {
-  journals: ReadonlyArray<JournalResource>;
-}
-
-export type UserJournalsResource = Resource<UserJournalsPayload>;
-
 export interface Waiting {
   kind: 'waiting';
 }
@@ -31,12 +19,12 @@ export interface LoadingError {
   error: LoadError;
 }
 
-export interface Ready {
+export interface Ready<T> {
   kind: 'ready';
-  resource: UserJournalsResource;
+  resource: Resource<T>;
 }
 
-export type State = Waiting | Loading | Ready | LoadingError;
+export type State<T> = Waiting | Loading | Ready<T> | LoadingError;
 
 export const waiting = (): Waiting => ({
   kind: 'waiting',
@@ -52,7 +40,7 @@ export const loadingError = (error: LoadError): LoadingError => ({
   error,
 });
 
-export const ready = (resource: UserJournalsResource): Ready => ({
+export const ready = <T>(resource: Resource<T>): Ready<T> => ({
   kind: 'ready',
   resource,
 });

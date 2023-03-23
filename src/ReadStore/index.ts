@@ -1,29 +1,19 @@
 import { assertNever } from '@/AssertNever';
 import { logMisfiredState } from '@/LogMisfiredState';
-import { Link } from '@/Resource/Types';
+import { Link, Resource } from '@/Resource/Types';
 import { makeAutoObservable } from 'mobx';
 import { err, ok, Result } from 'resulty';
-import {
-  loadingError,
-  loading,
-  Ready,
-  ready,
-  UserJournalsResource,
-  State,
-  waiting,
-  LoadError,
-} from './Types';
+import { loadingError, loading, Ready, ready, State, waiting, LoadError } from './Types';
 
-export default class UserJournalsStore {
-  public state: State;
+export default class ReadStore<T> {
+  public state: State<T>;
 
   constructor() {
     this.state = waiting();
     makeAutoObservable(this);
   }
 
-  misfiredState = (action: string): void =>
-    logMisfiredState('UserJournalsStore', action, this.state);
+  misfiredState = (action: string): void => logMisfiredState('ReadStore', action, this.state);
 
   loading = (link: Link) => {
     switch (this.state.kind) {
@@ -40,7 +30,7 @@ export default class UserJournalsStore {
     }
   };
 
-  ready = (resource: UserJournalsResource) => {
+  ready = (resource: Resource<T>) => {
     switch (this.state.kind) {
       case 'loading':
         this.state = ready(resource);
@@ -70,7 +60,7 @@ export default class UserJournalsStore {
     }
   };
 
-  get resource(): Result<Exclude<State, Ready>, UserJournalsResource> {
+  get resource(): Result<Exclude<State<T>, Ready<T>>, Resource<T>> {
     switch (this.state.kind) {
       case 'waiting':
       case 'loading':

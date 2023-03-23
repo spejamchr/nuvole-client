@@ -1,12 +1,7 @@
 import { readonlyArray } from '@/CooperExt';
 import { resourceDecoder } from '@/Resource/Decoders';
 import Decoder, { field, string, succeed } from 'jsonous';
-import {
-  JournalPayload,
-  JournalResource,
-  UserJournalsPayload,
-  UserJournalsResource,
-} from './Types';
+import { JournalPayload, JournalResource, UserJournalsPayload } from './Types';
 
 export const journalPayloadDecoder: Decoder<JournalPayload> = succeed({}).assign(
   'title',
@@ -19,8 +14,4 @@ export const journalResourceDecoder: Decoder<JournalResource> =
 export const userJournalsPayloadDecoder: Decoder<UserJournalsPayload> = succeed({}).assign(
   'journals',
   field('journals', readonlyArray(journalResourceDecoder)),
-);
-
-export const userJournalsResourceDecoder: Decoder<UserJournalsResource> = resourceDecoder(
-  userJournalsPayloadDecoder,
 );
