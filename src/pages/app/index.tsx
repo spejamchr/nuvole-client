@@ -1,3 +1,4 @@
+import AuthorizedRouter from '@/AuthorizedRouter';
 import RequiresAuthentication from '@/RequiresAuthentication';
 import WithCurrentUser from '@/WithCurrentUser';
 import { observer } from 'mobx-react';
@@ -8,7 +9,7 @@ const App: React.FC<{}> = () => {
     <RequiresAuthentication>
       {(session) => (
         <WithCurrentUser session={session}>
-          {(currentUser) => <code>{JSON.stringify(currentUser)}</code>}
+          {(currentUser) => <AuthorizedRouter session={session} currentUser={currentUser} />}
         </WithCurrentUser>
       )}
     </RequiresAuthentication>

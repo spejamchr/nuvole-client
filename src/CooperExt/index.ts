@@ -1,4 +1,5 @@
 import { identity, noop } from '@kofno/piper';
+import Decoder, { array } from 'jsonous';
 import { Result, err, Catamorphism, ok } from 'resulty';
 import Task from 'taskarian';
 
@@ -62,3 +63,6 @@ export const resultToTask = <E, A>(fn: () => Result<E, A>): Task<E, A> =>
     fn().cata({ Err, Ok });
     return noop;
   });
+
+export const readonlyArray = <T>(decoder: Decoder<T>): Decoder<ReadonlyArray<T>> =>
+  array(decoder).map<ReadonlyArray<T>>(identity);
