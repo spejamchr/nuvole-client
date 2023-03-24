@@ -1,11 +1,11 @@
 import { Resource } from '@/Resource/Types';
 
-export interface JournalPayload {
+export interface Journal {
   title: string;
 }
 
-export type JournalResource = Resource<JournalPayload>;
+export type JournalResource = Resource<Journal>;
 
-export interface UserJournalsPayload {
+export interface UserJournals {
   journals: ReadonlyArray<JournalResource>;
 }

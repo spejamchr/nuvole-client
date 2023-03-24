@@ -1,7 +1,7 @@
 import { Resource } from '@/Resource/Types';
 import { Maybe } from 'maybeasy';
 
-export interface CurrentUserPayload {
+export interface CurrentUser {
   publicReferenceToken: string;
   email: string;
   name: Maybe<string>;
@@ -13,4 +13,4 @@ export interface CurrentUserPayload {
   joinedAt: Date;
 }
 
-export type CurrentUserResource = Resource<CurrentUserPayload>;
+export type CurrentUserResource = Resource<CurrentUser>;

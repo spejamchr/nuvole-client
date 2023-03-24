@@ -3,10 +3,10 @@ import LoadingError from '@/LoadingError';
 import ReadStore from '@/ReadStore';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { CurrentUserPayload, CurrentUserResource } from './Types';
+import { CurrentUser, CurrentUserResource } from './Types';
 
 interface Props {
-  store: ReadStore<CurrentUserPayload>;
+  store: ReadStore<CurrentUser>;
   children: (session: CurrentUserResource) => React.ReactNode;
 }
 

@@ -1,8 +1,8 @@
 import { explicitMaybe } from '@execonline-inc/decoders';
 import Decoder, { boolean, dateISO, field, number, string, succeed } from 'jsonous';
-import { CurrentUserPayload } from './Types';
+import { CurrentUser } from './Types';
 
-export const currentUserPayloadDecoder: Decoder<CurrentUserPayload> = succeed({})
+export const currentUserDecoder: Decoder<CurrentUser> = succeed({})
   .assign('publicReferenceToken', field('public_reference_token', string))
   .assign('email', field('email', string))
   .assign('name', field('name', explicitMaybe(string)))

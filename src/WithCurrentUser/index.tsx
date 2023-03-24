@@ -5,7 +5,7 @@ import { findLink } from '@/Resource/Types';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ok } from 'resulty';
-import { currentUserPayloadDecoder } from './Decoder';
+import { currentUserDecoder } from './Decoder';
 import Display from './Display';
 import { CurrentUserResource } from './Types';
 
@@ -15,7 +15,7 @@ interface Props {
 }
 
 class WithCurrentUser extends React.Component<Props> {
-  store = new ReadStore(currentUserPayloadDecoder);
+  store = new ReadStore(currentUserDecoder);
 
   componentDidMount(): void {
     ok(this.props.session.links).andThen(findLink('user')).do(this.store.loading);
