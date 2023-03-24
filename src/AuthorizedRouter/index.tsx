@@ -1,26 +1,32 @@
-import { UserSessionResource } from '@/AuthenticationStore/Types';
 import { CurrentUserResource } from '@/CurrentUserStore/Types';
-import UnknownPath from '@/UnknownPath';
+import Journals from '@/Journals';
+import NotFound from '@/NotFound';
 import { observer } from 'mobx-react';
-import { useRouter } from 'next/router';
 import * as React from 'react';
-
-const Journals = React.lazy(() => import('@/Journals'));
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 interface Props {
-  session: UserSessionResource;
   currentUser: CurrentUserResource;
 }
 
-const AuthorizedRouter: React.FC<Props> = ({ currentUser }) => {
-  const { query } = useRouter();
-  switch (query.a) {
-    case undefined:
-    case 'journals':
-      return <Journals currentUser={currentUser} />;
-    default:
-      return <UnknownPath />;
-  }
-};
+export const authorizedRouter = ({ currentUser }: Props) =>
+  createBrowserRouter(
+    [
+      {
+        path: '/',
+        element: <Journals currentUser={currentUser} />,
+        ErrorBoundary: NotFound,
+      },
+      {
+        path: 'journals',
+        element: <Journals currentUser={currentUser} />,
+      },
+    ],
+    { basename: '/app' },
+  );
+
+const AuthorizedRouter: React.FC<Props> = (props) => (
+  <RouterProvider router={authorizedRouter(props)} />
+);
 
 export default observer(AuthorizedRouter);

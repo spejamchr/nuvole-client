@@ -9,7 +9,7 @@ const App: React.FC<{}> = () => {
     <RequiresAuthentication>
       {(session) => (
         <WithCurrentUser session={session}>
-          {(currentUser) => <AuthorizedRouter session={session} currentUser={currentUser} />}
+          {(currentUser) => <AuthorizedRouter currentUser={currentUser} />}
         </WithCurrentUser>
       )}
     </RequiresAuthentication>

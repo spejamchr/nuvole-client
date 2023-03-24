@@ -3,6 +3,14 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: '/app/:path*',
+        destination: '/app',
+      },
+    ];
+  },
   /**
    * Custom Webpack Config
    * https://nextjs.org/docs/api-reference/next.config.js/custom-webpack-config
