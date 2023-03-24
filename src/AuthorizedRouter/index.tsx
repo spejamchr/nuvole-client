@@ -1,6 +1,6 @@
-import { CurrentUserResource } from '@/CurrentUserStore/Types';
 import Journals from '@/Journals';
 import NotFound from '@/NotFound';
+import { CurrentUserResource } from '@/WithCurrentUser/Types';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';

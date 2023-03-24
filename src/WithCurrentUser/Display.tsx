@@ -1,12 +1,12 @@
-import CurrentUserStore from '@/CurrentUserStore';
-import { CurrentUserResource } from '@/CurrentUserStore/Types';
 import Loading from '@/Loading';
 import LoadingError from '@/LoadingError';
+import ReadStore from '@/ReadStore';
 import { observer } from 'mobx-react';
 import * as React from 'react';
+import { CurrentUserPayload, CurrentUserResource } from './Types';
 
 interface Props {
-  store: CurrentUserStore;
+  store: ReadStore<CurrentUserPayload>;
   children: (session: CurrentUserResource) => React.ReactNode;
 }
 
@@ -18,7 +18,7 @@ const Display: React.FC<Props> = ({ store, children }) => {
     case 'loading-error':
       return <LoadingError />;
     case 'ready':
-      return <>{children(store.state.currentUser)}</>;
+      return <>{children(store.state.resource)}</>;
   }
 };
 

@@ -12,11 +12,7 @@ import { LoadError, State } from './Types';
 const fetchResource = <T>(decoder: Decoder<T>) =>
   callAuthenticatedApi(resourceDecoder(decoder), {});
 
-interface Props<T> {
-  decoder: Decoder<T>;
-}
-
-export class ReadStoreReactions<T> extends ClassReactor<ReadStore<T>, Props<T>> {
+export class ReadStoreReactions<T> extends ClassReactor<ReadStore<T>> {
   effects =
     (store: ReadStore<T>) =>
     (state: State<T>): void => {
@@ -25,7 +21,7 @@ export class ReadStoreReactions<T> extends ClassReactor<ReadStore<T>, Props<T>> 
           break;
         case 'loading':
           Task.succeed<LoadError, Link>(state.link)
-            .andThen(fetchResource(this.props.decoder))
+            .andThen(fetchResource(state.decoder))
             .fork(store.loadingError, store.ready);
           break;
         case 'loading-error':

@@ -1,6 +1,7 @@
 import { assertNever } from '@/AssertNever';
 import { logMisfiredState } from '@/LogMisfiredState';
 import { Link, Resource } from '@/Resource/Types';
+import Decoder from 'jsonous';
 import { makeAutoObservable } from 'mobx';
 import { err, ok, Result } from 'resulty';
 import { loadingError, loading, Ready, ready, State, waiting, LoadError } from './Types';
@@ -8,8 +9,8 @@ import { loadingError, loading, Ready, ready, State, waiting, LoadError } from '
 export default class ReadStore<T> {
   public state: State<T>;
 
-  constructor() {
-    this.state = waiting();
+  constructor(decoder: Decoder<T>) {
+    this.state = waiting(decoder);
     makeAutoObservable(this);
   }
 
@@ -18,7 +19,7 @@ export default class ReadStore<T> {
   loading = (link: Link) => {
     switch (this.state.kind) {
       case 'waiting':
-        this.state = loading(link);
+        this.state = loading(link, this.state.decoder);
         break;
       case 'loading':
       case 'ready':

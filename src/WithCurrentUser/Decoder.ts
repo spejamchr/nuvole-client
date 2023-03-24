@@ -1,7 +1,6 @@
-import { resourceDecoder } from '@/Resource/Decoders';
 import { explicitMaybe } from '@execonline-inc/decoders';
 import Decoder, { boolean, dateISO, field, number, string, succeed } from 'jsonous';
-import { CurrentUserPayload, CurrentUserResource } from './Types';
+import { CurrentUserPayload } from './Types';
 
 export const currentUserPayloadDecoder: Decoder<CurrentUserPayload> = succeed({})
   .assign('publicReferenceToken', field('public_reference_token', string))
@@ -13,6 +12,3 @@ export const currentUserPayloadDecoder: Decoder<CurrentUserPayload> = succeed({}
   .assign('journalCount', field('journal_count', number))
   .assign('entryCount', field('entry_count', number))
   .assign('joinedAt', field('joined_at', dateISO));
-
-export const currentUserResourceDecoder: Decoder<CurrentUserResource> =
-  resourceDecoder(currentUserPayloadDecoder);
