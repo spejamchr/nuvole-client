@@ -27,7 +27,7 @@ export interface Ready<T> {
   resource: Resource<T>;
 }
 
-export type State<T> = Waiting<T> | Loading<T> | Ready<T> | LoadingError;
+export type State<T> = Waiting<T> | Loading<T> | LoadingError | Ready<T>;
 
 export const waiting = <T>(decoder: Decoder<T>): Waiting<T> => ({
   kind: 'waiting',

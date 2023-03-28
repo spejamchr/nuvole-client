@@ -1,10 +1,21 @@
 import { assertNever } from '@/AssertNever';
 import { logMisfiredState } from '@/LogMisfiredState';
-import { Link, Resource } from '@/Resource/Types';
+import { Link, ResourceForm } from '@/Resource/Types';
 import Decoder from 'jsonous';
 import { makeAutoObservable } from 'mobx';
 import { err, ok, Result } from 'resulty';
-import { loadingError, loading, Ready, ready, State, waiting, LoadError } from './Types';
+import {
+  loadingError,
+  loading,
+  Ready,
+  ready,
+  State,
+  waiting,
+  LoadError,
+  submitting,
+  SubmitError,
+  submittingError,
+} from './Types';
 
 export default class ReadStore<T> {
   public state: State<T>;
@@ -24,6 +35,8 @@ export default class ReadStore<T> {
       case 'loading':
       case 'ready':
       case 'loading-error':
+      case 'submitting':
+      case 'submitting-error':
         // noop
         break;
       default:
@@ -39,6 +52,8 @@ export default class ReadStore<T> {
       case 'waiting':
       case 'ready':
       case 'loading-error':
+      case 'submitting':
+      case 'submitting-error':
         this.misfiredState('loadingError');
         break;
       default:
@@ -46,14 +61,16 @@ export default class ReadStore<T> {
     }
   };
 
-  ready = (resource: Resource<T>) => {
+  ready = (resource: ResourceForm<T>) => {
     switch (this.state.kind) {
       case 'loading':
-        this.state = ready(resource);
+      case 'submitting':
+        this.state = ready(resource, this.state.decoder);
         break;
       case 'waiting':
       case 'ready':
       case 'loading-error':
+      case 'submitting-error':
         this.misfiredState('ready');
         break;
       default:
@@ -61,11 +78,47 @@ export default class ReadStore<T> {
     }
   };
 
-  get resource(): Result<Exclude<State<T>, Ready<T>>, Resource<T>> {
+  submitting = (resource: ResourceForm<T>) => {
+    switch (this.state.kind) {
+      case 'ready':
+        this.state = submitting(resource, this.state.decoder);
+        break;
+      case 'waiting':
+      case 'loading':
+      case 'loading-error':
+      case 'submitting':
+      case 'submitting-error':
+        this.misfiredState('ready');
+        break;
+      default:
+        assertNever(this.state);
+    }
+  };
+
+  submittingError = (error: SubmitError) => {
+    switch (this.state.kind) {
+      case 'submitting':
+        this.state = submittingError(this.state.resource, error);
+        break;
+      case 'waiting':
+      case 'loading':
+      case 'loading-error':
+      case 'ready':
+      case 'submitting-error':
+        this.misfiredState('ready');
+        break;
+      default:
+        assertNever(this.state);
+    }
+  };
+
+  get resource(): Result<Exclude<State<T>, Ready<T>>, ResourceForm<T>> {
     switch (this.state.kind) {
       case 'waiting':
       case 'loading':
       case 'loading-error':
+      case 'submitting':
+      case 'submitting-error':
         return err(this.state);
       case 'ready':
         return ok(this.state.resource);
