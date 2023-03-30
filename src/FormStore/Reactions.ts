@@ -2,22 +2,22 @@ import { callAuthenticatedApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
 import { error } from '@/Logging';
 import { ClassReactor } from '@/Reactor';
-import { resourceDecoder } from '@/Resource/Decoders';
+import { resourceFormDecoder } from '@/Resource/Decoders';
 import { ApiFormValues, findLinkT, formToApiValues, Link } from '@/Resource/Types';
 import Decoder from 'jsonous';
 import Task from 'taskarian';
-import ReadStore from '.';
+import FormStore from '.';
 import { LoadError, State, SubmitError } from './Types';
 
 const fetchResource = <T>(decoder: Decoder<T>) =>
-  callAuthenticatedApi(resourceDecoder(decoder), {});
+  callAuthenticatedApi(resourceFormDecoder(decoder), {});
 
 const submitForm = <T>(decoder: Decoder<T>, payload: ApiFormValues) =>
-  callAuthenticatedApi(resourceDecoder(decoder), payload);
+  callAuthenticatedApi(resourceFormDecoder(decoder), payload);
 
-export class ReadStoreReactions<T> extends ClassReactor<ReadStore<T>> {
+export class FormStoreReactions<T> extends ClassReactor<FormStore<T>> {
   effects =
-    (store: ReadStore<T>) =>
+    (store: FormStore<T>) =>
     (state: State<T>): void => {
       switch (state.kind) {
         case 'waiting':
@@ -47,4 +47,4 @@ export class ReadStoreReactions<T> extends ClassReactor<ReadStore<T>> {
     };
 }
 
-export default ReadStoreReactions;
+export default FormStoreReactions;

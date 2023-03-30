@@ -13,6 +13,7 @@ import {
   Rel,
   rels,
   Resource,
+  ResourceForm,
   StringInput,
 } from './Types';
 
@@ -60,3 +61,6 @@ export const apiFormDecoder: Decoder<ApiForm> = succeed({})
   .assign('name', field('name', string))
   .assign('actionRel', field('action_rel', relDecoder))
   .assign('inputs', field('inputs', readonlyArray(inputDecoder)));
+
+export const resourceFormDecoder = <T>(decoder: Decoder<T>): Decoder<ResourceForm<T>> =>
+  resourceDecoder(decoder).assign('form', field('form', apiFormDecoder));
