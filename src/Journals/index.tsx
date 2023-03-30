@@ -6,6 +6,7 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ok } from 'resulty';
 import { userJournalsDecoder } from './Decoder';
+import Display from './Display';
 
 interface Props {
   currentUser: CurrentUserResource;
@@ -21,7 +22,7 @@ const Journals: React.FC<Props> = ({ currentUser }) => {
   return (
     <>
       <ReadStoreReactions store={store.current} />
-      <code>{JSON.stringify(store.current.state)}</code>
+      <Display store={store.current} />
     </>
   );
 };
