@@ -1,7 +1,7 @@
 import { callApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
 import { error } from '@/Logging';
-import { ClassReactor } from '@/Reactor';
+import { ClassReactor, EffectsProps } from '@/Reactor';
 import { resourceDecoder } from '@/Resource/Decoders';
 import { Link } from '@/Resource/Types';
 import Decoder from 'jsonous';
@@ -11,16 +11,20 @@ import { LoadError, State } from './Types';
 
 const fetchResource = <T>(decoder: Decoder<T>) => callApi(resourceDecoder(decoder), {});
 
-export class ReadStoreReactions<T> extends ClassReactor<ReadStore<T>> {
+interface Props<T> {
+  decoder: Decoder<T>;
+}
+
+export class ReadStoreReactions<T> extends ClassReactor<ReadStore<T>, Props<T>> {
   effects =
-    ({ store }: { store: ReadStore<T> }) =>
+    ({ store, decoder }: EffectsProps<ReadStore<T>, Props<T>>) =>
     (state: State<T>): void => {
       switch (state.kind) {
         case 'waiting':
           break;
         case 'loading':
           Task.succeed<LoadError, Link>(state.link)
-            .andThen(fetchResource(state.decoder))
+            .andThen(fetchResource(decoder))
             .fork(store.loadingError, store.ready);
           break;
         case 'loading-error':

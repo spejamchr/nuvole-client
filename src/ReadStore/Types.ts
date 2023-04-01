@@ -2,17 +2,14 @@ import { AppyError } from '@/Appy';
 import { FailedDecoder } from '@/CooperExt';
 import { Link, Resource } from '@/Resource/Types';
 import { NoCurrentSession } from '@/SessionStore/Types';
-import Decoder from 'jsonous';
 
-export interface Waiting<T> {
+export interface Waiting {
   kind: 'waiting';
-  decoder: Decoder<T>;
 }
 
-export interface Loading<T> {
+export interface Loading {
   kind: 'loading';
   link: Link;
-  decoder: Decoder<T>;
 }
 
 export type LoadError = NoCurrentSession | AppyError | FailedDecoder;
@@ -27,17 +24,15 @@ export interface Ready<T> {
   resource: Resource<T>;
 }
 
-export type State<T> = Waiting<T> | Loading<T> | LoadingError | Ready<T>;
+export type State<T> = Waiting | Loading | LoadingError | Ready<T>;
 
-export const waiting = <T>(decoder: Decoder<T>): Waiting<T> => ({
+export const waiting = (): Waiting => ({
   kind: 'waiting',
-  decoder,
 });
 
-export const loading = <T>(link: Link, decoder: Decoder<T>): Loading<T> => ({
+export const loading = (link: Link): Loading => ({
   kind: 'loading',
   link,
-  decoder,
 });
 
 export const loadingError = (error: LoadError): LoadingError => ({

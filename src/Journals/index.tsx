@@ -7,13 +7,14 @@ import * as React from 'react';
 import { ok } from 'resulty';
 import { userJournalsDecoder } from './Decoder';
 import Display from './Display';
+import { UserJournals } from './Types';
 
 interface Props {
   currentUser: CurrentUserResource;
 }
 
 const Journals: React.FC<Props> = ({ currentUser }) => {
-  const store = React.useRef(new ReadStore(userJournalsDecoder));
+  const store = React.useRef(new ReadStore<UserJournals>());
 
   React.useEffect(() => {
     ok(currentUser.links).andThen(findLink('journals')).do(store.current.loading);
@@ -21,7 +22,7 @@ const Journals: React.FC<Props> = ({ currentUser }) => {
 
   return (
     <>
-      <ReadStoreReactions store={store.current} />
+      <ReadStoreReactions store={store.current} decoder={userJournalsDecoder} />
       <Display store={store.current} />
     </>
   );

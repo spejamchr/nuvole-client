@@ -7,7 +7,7 @@ import * as React from 'react';
 import { ok } from 'resulty';
 import { currentUserDecoder } from './Decoder';
 import Display from './Display';
-import { CurrentUserResource } from './Types';
+import { CurrentUser, CurrentUserResource } from './Types';
 
 interface Props {
   session: UserSessionResource;
@@ -15,7 +15,7 @@ interface Props {
 }
 
 class WithCurrentUser extends React.Component<Props> {
-  store = new ReadStore(currentUserDecoder);
+  store = new ReadStore<CurrentUser>();
 
   componentDidMount(): void {
     ok(this.props.session.links).andThen(findLink('user')).do(this.store.loading);
@@ -24,7 +24,7 @@ class WithCurrentUser extends React.Component<Props> {
   render() {
     return (
       <>
-        <ReadStoreReactions store={this.store} />
+        <ReadStoreReactions store={this.store} decoder={currentUserDecoder} />
         <Display store={this.store} children={this.props.children} />
       </>
     );
