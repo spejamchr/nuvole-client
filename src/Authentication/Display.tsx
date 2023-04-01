@@ -1,19 +1,26 @@
-import { authenticationStore } from '@/AuthenticationStore';
+import Loading from '@/Loading';
+import LoadingError from '@/LoadingError';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import Form from './Form';
+import { AuthFormStore } from './Types';
 
-interface Props {}
+interface Props {
+  store: AuthFormStore;
+}
 
-const Display: React.FC<Props> = () => {
-  switch (authenticationStore.state.kind) {
+const Display: React.FC<Props> = ({ store }) => {
+  switch (store.state.kind) {
     case 'waiting':
-    case 'form-entry':
-    case 'form-ready':
-    case 'authenticating':
-    case 'authenticating-error':
-      return <Form />;
-    case 'authenticated':
+    case 'loading':
+      return <Loading />;
+    case 'loading-error':
+      return <LoadingError />;
+    case 'ready':
+    case 'submitting':
+    case 'submitting-error':
+      return <Form store={store} resource={store.state.resource} />;
+    case 'submitted':
       return <></>;
   }
 };

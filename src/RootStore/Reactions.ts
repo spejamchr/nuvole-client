@@ -7,9 +7,10 @@ import { error } from '@/Logging';
 
 const fetchRoot = callApi(rootResourceDecoder, {});
 
-const Reactions = Reactor<typeof rootStore>((store) => (state) => {
+const Reactions = Reactor<typeof rootStore>(({ store }) => (state) => {
   switch (state.kind) {
     case 'waiting':
+      store.loading();
       break;
     case 'loading':
       fetchRoot(state.link).fork(store.error, store.ready);

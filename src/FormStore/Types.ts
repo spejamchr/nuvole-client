@@ -1,18 +1,15 @@
 import { AppyError } from '@/Appy';
 import { FailedDecoder } from '@/CooperExt';
-import { Link, MissingLink, ResourceForm } from '@/Resource/Types';
+import { Link, MissingLink, Resource, ResourceForm } from '@/Resource/Types';
 import { NoCurrentSession } from '@/SessionStore/Types';
-import Decoder from 'jsonous';
 
-export interface Waiting<T> {
+export interface Waiting {
   kind: 'waiting';
-  decoder: Decoder<T>;
 }
 
-export interface Loading<T> {
+export interface Loading {
   kind: 'loading';
   link: Link;
-  decoder: Decoder<T>;
 }
 
 export type LoadError = NoCurrentSession | AppyError | FailedDecoder;
@@ -25,16 +22,14 @@ export interface LoadingError {
 export interface Ready<T> {
   kind: 'ready';
   resource: ResourceForm<T>;
-  decoder: Decoder<T>;
 }
 
 export interface Submitting<T> {
   kind: 'submitting';
   resource: ResourceForm<T>;
-  decoder: Decoder<T>;
 }
 
-export type SubmitError = MissingLink | NoCurrentSession | AppyError | FailedDecoder;
+export type SubmitError = MissingLink | AppyError | FailedDecoder;
 
 export interface SubmittingError<T> {
   kind: 'submitting-error';
@@ -42,23 +37,27 @@ export interface SubmittingError<T> {
   error: SubmitError;
 }
 
-export type State<T> =
-  | Waiting<T>
-  | Loading<T>
-  | LoadingError
-  | Ready<T>
-  | Submitting<T>
-  | SubmittingError<T>;
+export interface Submitted<S extends Resource<unknown>> {
+  kind: 'submitted';
+  response: S;
+}
 
-export const waiting = <T>(decoder: Decoder<T>): Waiting<T> => ({
+export type State<F, S extends Resource<unknown> = ResourceForm<F>> =
+  | Waiting
+  | Loading
+  | LoadingError
+  | Ready<F>
+  | Submitting<F>
+  | SubmittingError<F>
+  | Submitted<S>;
+
+export const waiting = (): Waiting => ({
   kind: 'waiting',
-  decoder,
 });
 
-export const loading = <T>(link: Link, decoder: Decoder<T>): Loading<T> => ({
+export const loading = (link: Link): Loading => ({
   kind: 'loading',
   link,
-  decoder,
 });
 
 export const loadingError = (error: LoadError): LoadingError => ({
@@ -66,16 +65,14 @@ export const loadingError = (error: LoadError): LoadingError => ({
   error,
 });
 
-export const ready = <T>(resource: ResourceForm<T>, decoder: Decoder<T>): Ready<T> => ({
+export const ready = <T>(resource: ResourceForm<T>): Ready<T> => ({
   kind: 'ready',
   resource,
-  decoder,
 });
 
-export const submitting = <T>(resource: ResourceForm<T>, decoder: Decoder<T>): Submitting<T> => ({
+export const submitting = <T>(resource: ResourceForm<T>): Submitting<T> => ({
   kind: 'submitting',
   resource,
-  decoder,
 });
 
 export const submittingError = <T>(
@@ -85,4 +82,9 @@ export const submittingError = <T>(
   kind: 'submitting-error',
   resource,
   error,
+});
+
+export const submitted = <S extends Resource<unknown>>(response: S): Submitted<S> => ({
+  kind: 'submitted',
+  response,
 });

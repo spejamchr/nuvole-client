@@ -1,4 +1,4 @@
-import { IReactionDisposer, reaction } from 'mobx';
+import { reaction } from 'mobx';
 import * as React from 'react';
 import { useEffect } from 'react';
 
@@ -10,14 +10,18 @@ interface Props<Store> {
   store: Store;
 }
 
-type Effects<Store extends HasState<unknown>> = (store: Store) => (state: Store['state']) => void;
+export type EffectsProps<Store, SpecificProps = {}> = Props<Store> & SpecificProps;
+
+type Effects<Store extends HasState<unknown>, SpecificProps> = (
+  props: EffectsProps<Store, SpecificProps>,
+) => (state: Store['state']) => void;
 
 const Reactor =
   <Store extends HasState<unknown>, SpecificProps = {}>(
-    effects: Effects<Store>,
-  ): React.FC<Props<Store> & SpecificProps> =>
-  ({ store }) => {
-    useEffect(() => reaction(() => store.state, effects(store), { fireImmediately: true }));
+    effects: Effects<Store, SpecificProps>,
+  ): React.FC<EffectsProps<Store, SpecificProps>> =>
+  (props) => {
+    useEffect(() => reaction(() => props.store.state, effects(props), { fireImmediately: true }));
     return <></>;
   };
 
@@ -26,22 +30,13 @@ export default Reactor;
 export abstract class ClassReactor<
   Store extends HasState<unknown>,
   SpecificProps = {},
-> extends React.Component<Props<Store> & SpecificProps> {
-  disposer: IReactionDisposer | undefined;
-
-  componentDidMount(): void {
-    this.disposer = reaction(() => this.props.store.state, this.effects(this.props.store));
-  }
-
-  abstract effects: Effects<Store>;
-
-  componentWillUnmount(): void {
-    if (this.disposer) {
-      this.disposer();
-    }
-  }
+> extends React.Component<EffectsProps<Store, SpecificProps>> {
+  abstract effects: Effects<Store, SpecificProps>;
 
   render() {
-    return <></>;
+    const Reactions = Reactor<Store, SpecificProps>(
+      (effects) => (props) => this.effects(effects)(props),
+    );
+    return <Reactions {...this.props} />;
   }
 }

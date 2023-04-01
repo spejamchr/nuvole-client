@@ -15,6 +15,7 @@ import {
   Resource,
   ResourceForm,
   StringInput,
+  StringInputType,
 } from './Types';
 
 export const relDecoder: Decoder<Rel> = oneOf(rels.map(stringLiteral));
@@ -36,10 +37,20 @@ export const baseInputDecoder = <K extends Input['kind']>(kind: K): Decoder<Base
     .assign('label', field('label', string))
     .assign('access', field('access', accessDecoder));
 
+export const stringInputTypeDecoder: Decoder<StringInputType> = oneOf<StringInputType>([
+  stringLiteral<StringInputType>('text'), // default first
+  stringLiteral<StringInputType>('email'),
+  stringLiteral<StringInputType>('password'),
+  stringLiteral<StringInputType>('search'),
+  stringLiteral<StringInputType>('tel'),
+  stringLiteral<StringInputType>('url'),
+]);
+
 export const stringInputDecoder: Decoder<StringInput> = baseInputDecoder('string')
-  .assign('minLength', field('min_length', number))
-  .assign('maxLength', field('max_length', number))
-  .assign('value', field('value', string));
+  .assign('minLength', field('min_length', explicitMaybe(number)))
+  .assign('maxLength', field('max_length', explicitMaybe(number)))
+  .assign('value', field('value', string))
+  .assign('type', field('type', stringInputTypeDecoder));
 
 export const booleanInputDecoder: Decoder<BooleanInput> = baseInputDecoder('boolean').assign(
   'value',

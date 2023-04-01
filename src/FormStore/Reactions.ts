@@ -1,30 +1,36 @@
-import { callAuthenticatedApi } from '@/Appy';
+import { callApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
 import { error } from '@/Logging';
-import { ClassReactor } from '@/Reactor';
+import { ClassReactor, EffectsProps } from '@/Reactor';
 import { resourceFormDecoder } from '@/Resource/Decoders';
-import { ApiFormValues, findLinkT, formToApiValues, Link } from '@/Resource/Types';
+import { ApiFormValues, findLinkT, formToApiValues, Link, Resource } from '@/Resource/Types';
 import Decoder from 'jsonous';
 import Task from 'taskarian';
 import FormStore from '.';
 import { LoadError, State, SubmitError } from './Types';
 
-const fetchResource = <T>(decoder: Decoder<T>) =>
-  callAuthenticatedApi(resourceFormDecoder(decoder), {});
+const fetchResource = <T>(decoder: Decoder<T>) => callApi(resourceFormDecoder(decoder), {});
 
-const submitForm = <T>(decoder: Decoder<T>, payload: ApiFormValues) =>
-  callAuthenticatedApi(resourceFormDecoder(decoder), payload);
+const submitForm = <T>(decoder: Decoder<T>, payload: ApiFormValues) => callApi(decoder, payload);
 
-export class FormStoreReactions<T> extends ClassReactor<FormStore<T>> {
+interface Props<F, S extends Resource<unknown>> {
+  fetchingDecoder: Decoder<F>;
+  submittingDecoder: Decoder<S>;
+}
+
+export class FormStoreReactions<F, S extends Resource<unknown>> extends ClassReactor<
+  FormStore<F, S>,
+  Props<F, S>
+> {
   effects =
-    (store: FormStore<T>) =>
-    (state: State<T>): void => {
+    ({ store, fetchingDecoder, submittingDecoder }: EffectsProps<FormStore<F, S>, Props<F, S>>) =>
+    (state: State<F, S>): void => {
       switch (state.kind) {
         case 'waiting':
           break;
         case 'loading':
           Task.succeed<LoadError, Link>(state.link)
-            .andThen(fetchResource(state.decoder))
+            .andThen(fetchResource(fetchingDecoder))
             .fork(store.loadingError, store.ready);
           break;
         case 'loading-error':
@@ -35,11 +41,13 @@ export class FormStoreReactions<T> extends ClassReactor<FormStore<T>> {
         case 'submitting':
           Task.succeed<SubmitError, ReadonlyArray<Link>>(state.resource.links)
             .andThen(findLinkT(state.resource.form.actionRel))
-            .andThen(submitForm(state.decoder, formToApiValues(state.resource)))
-            .fork(store.submittingError, store.ready);
+            .andThen(submitForm(submittingDecoder, formToApiValues(state.resource)))
+            .fork(store.submittingError, store.submitted);
           break;
         case 'submitting-error':
           error('Error submitting form:', JSON.stringify(state.error));
+          break;
+        case 'submitted':
           break;
         default:
           assertNever(state);

@@ -1,6 +1,4 @@
 import { assertNever } from '@/AssertNever';
-import { authenticationStore } from '@/AuthenticationStore';
-import { UserSessionResource, whenActiveSession } from '@/AuthenticationStore/Types';
 import { Nullish } from '@/CooperExt';
 import { logMisfiredState } from '@/LogMisfiredState';
 import { makeAutoObservable } from 'mobx';
@@ -15,7 +13,9 @@ import {
   refreshingSession,
   refreshingSessionError,
   State,
+  UserSessionResource,
   waiting,
+  whenActiveSession,
   withoutSession,
   withSession,
   WriteError,
@@ -230,7 +230,6 @@ class SessionStore {
       case 'refreshing-session':
       case 'refreshing-session-error':
         this.state = withoutSession();
-        authenticationStore.logout();
         break;
       case 'reading-storage-error':
       case 'without-session':

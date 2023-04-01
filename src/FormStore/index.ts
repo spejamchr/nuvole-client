@@ -1,7 +1,6 @@
 import { assertNever } from '@/AssertNever';
 import { logMisfiredState } from '@/LogMisfiredState';
-import { Link, ResourceForm } from '@/Resource/Types';
-import Decoder from 'jsonous';
+import { Link, Resource, ResourceForm } from '@/Resource/Types';
 import { makeAutoObservable } from 'mobx';
 import { err, ok, Result } from 'resulty';
 import {
@@ -15,28 +14,30 @@ import {
   submitting,
   SubmitError,
   submittingError,
+  submitted,
 } from './Types';
 
-export default class ReadStore<T> {
-  public state: State<T>;
+export default class FormStore<F, S extends Resource<unknown> = ResourceForm<F>> {
+  public state: State<F, S>;
 
-  constructor(decoder: Decoder<T>) {
-    this.state = waiting(decoder);
+  constructor() {
+    this.state = waiting();
     makeAutoObservable(this);
   }
 
-  misfiredState = (action: string): void => logMisfiredState('ReadStore', action, this.state);
+  misfiredState = (action: string): void => logMisfiredState('FormStore', action, this.state);
 
   loading = (link: Link) => {
     switch (this.state.kind) {
       case 'waiting':
-        this.state = loading(link, this.state.decoder);
+        this.state = loading(link);
         break;
       case 'loading':
       case 'ready':
       case 'loading-error':
       case 'submitting':
       case 'submitting-error':
+      case 'submitted':
         // noop
         break;
       default:
@@ -54,6 +55,7 @@ export default class ReadStore<T> {
       case 'loading-error':
       case 'submitting':
       case 'submitting-error':
+      case 'submitted':
         this.misfiredState('loadingError');
         break;
       default:
@@ -61,11 +63,12 @@ export default class ReadStore<T> {
     }
   };
 
-  ready = (resource: ResourceForm<T>) => {
+  ready = (resource: ResourceForm<F>) => {
     switch (this.state.kind) {
       case 'loading':
       case 'submitting':
-        this.state = ready(resource, this.state.decoder);
+      case 'submitted':
+        this.state = ready(resource);
         break;
       case 'waiting':
       case 'ready':
@@ -78,16 +81,17 @@ export default class ReadStore<T> {
     }
   };
 
-  submitting = (resource: ResourceForm<T>) => {
+  submitting = (resource: ResourceForm<F>) => {
     switch (this.state.kind) {
       case 'ready':
-        this.state = submitting(resource, this.state.decoder);
+      case 'submitting-error':
+      case 'submitted':
+        this.state = submitting(resource);
         break;
       case 'waiting':
       case 'loading':
       case 'loading-error':
       case 'submitting':
-      case 'submitting-error':
         this.misfiredState('ready');
         break;
       default:
@@ -105,6 +109,7 @@ export default class ReadStore<T> {
       case 'loading-error':
       case 'ready':
       case 'submitting-error':
+      case 'submitted':
         this.misfiredState('ready');
         break;
       default:
@@ -112,16 +117,49 @@ export default class ReadStore<T> {
     }
   };
 
-  get resource(): Result<Exclude<State<T>, Ready<T>>, ResourceForm<T>> {
+  submitted = (response: S) => {
+    switch (this.state.kind) {
+      case 'submitting':
+        this.state = submitted(response);
+        break;
+      case 'waiting':
+      case 'loading':
+      case 'loading-error':
+      case 'ready':
+      case 'submitting-error':
+      case 'submitted':
+        this.misfiredState('ready');
+        break;
+      default:
+        assertNever(this.state);
+    }
+  };
+
+  get resource(): Result<Exclude<State<F, S>, Ready<F>>, ResourceForm<F>> {
     switch (this.state.kind) {
       case 'waiting':
       case 'loading':
       case 'loading-error':
       case 'submitting':
       case 'submitting-error':
+      case 'submitted':
         return err(this.state);
       case 'ready':
         return ok(this.state.resource);
+    }
+  }
+
+  get submittable(): boolean {
+    switch (this.state.kind) {
+      case 'waiting':
+      case 'loading':
+      case 'loading-error':
+      case 'submitting':
+        return false;
+      case 'ready':
+      case 'submitting-error':
+      case 'submitted':
+        return true;
     }
   }
 }

@@ -1,7 +1,7 @@
-import { UserSessionResource } from '@/AuthenticationStore/Types';
 import ReadStore from '@/ReadStore';
 import ReadStoreReactions from '@/ReadStore/Reactions';
 import { findLink } from '@/Resource/Types';
+import { UserSessionResource } from '@/SessionStore/Types';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { ok } from 'resulty';

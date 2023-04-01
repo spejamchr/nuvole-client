@@ -1,11 +1,16 @@
-import { sessionExpiringSoon, UserSession, UserSessionResource } from '@/AuthenticationStore/Types';
-import { resultToTask } from '@/CooperExt';
 import { Link } from '@/Resource/Types';
 import { sessionStore } from '@/SessionStore';
-import { NoCurrentSession } from '@/SessionStore/Types';
+import {
+  NoCurrentSession,
+  sessionExpiringSoon,
+  UserSession,
+  UserSessionResource,
+} from '@/SessionStore/Types';
+import { flatMap } from '@execonline-inc/collections';
 import { identity } from '@kofno/piper';
 import { Header, HttpError, RequestBuilder, toHttpResponseTask } from 'ajaxian';
 import Decoder from 'jsonous';
+import { Result } from 'resulty';
 import Task from 'taskarian';
 
 export type AppyError = HttpError;
@@ -21,17 +26,10 @@ export const request = <T>(link: Link, decoder: Decoder<T>, payload: {}): Reques
     decoder: decoder.toJsonFn(),
   });
 
-export const callApi =
-  <T, Payload extends {} = {}>(decoder: Decoder<T>, payload: Payload) =>
-  (link: Link): Task<HttpError, T> =>
-    toHttpResponseTask(request(link, decoder, payload)).map((s) => s.result);
-
-export const withActiveSession = resultToTask(sessionStore.session);
-
-export const authHeader = (session: UserSessionResource): Header => ({
-  field: 'Authorization',
-  value: `Bearer ${session.payload.jwt}`,
-});
+export const appendHeaders =
+  (headers: ReadonlyArray<Header>) =>
+  <T>(requestBuilder: RequestBuilder<T>): RequestBuilder<T> =>
+    headers.reduce((rb, h) => rb.withHeader(h), requestBuilder);
 
 export const triggerSessionRefreshIfExpiringSoon = (session: UserSession): void => {
   if (sessionExpiringSoon(session)) {
@@ -39,13 +37,28 @@ export const triggerSessionRefreshIfExpiringSoon = (session: UserSession): void 
   }
 };
 
-export const callAuthenticatedApi =
+export const authHeader = (session: UserSessionResource): Header => ({
+  field: 'Authorization',
+  value: `Bearer ${session.payload.jwt}`,
+});
+
+export const getAuthHeader = (): Result<NoCurrentSession, Header> =>
+  sessionStore
+    .session()
+    .do(({ payload }) => triggerSessionRefreshIfExpiringSoon(payload))
+    .map(authHeader);
+
+export const apiHeaders = (): ReadonlyArray<Header> =>
+  flatMap(identity, [
+    getAuthHeader()
+      .map((h) => [h])
+      .getOrElseValue([]),
+  ]);
+
+export const callApi =
   <T, Payload extends {} = {}>(decoder: Decoder<T>, payload: Payload) =>
-  (link: Link): Task<NoCurrentSession | HttpError, T> =>
-    withActiveSession
-      .mapError<NoCurrentSession | HttpError>(identity)
-      .do(({ payload }) => triggerSessionRefreshIfExpiringSoon(payload))
-      .map(authHeader)
-      .map((header) => request(link, decoder, payload).withHeader(header))
-      .andThen((request) => toHttpResponseTask(request))
+  (link: Link): Task<HttpError, T> =>
+    Task.succeed<HttpError, RequestBuilder<T>>(request(link, decoder, payload))
+      .map(appendHeaders(apiHeaders()))
+      .andThen(toHttpResponseTask)
       .map((s) => s.result);

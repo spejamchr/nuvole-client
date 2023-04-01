@@ -1,4 +1,4 @@
-import { callAuthenticatedApi } from '@/Appy';
+import { callApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
 import { error } from '@/Logging';
 import { ClassReactor } from '@/Reactor';
@@ -9,12 +9,11 @@ import Task from 'taskarian';
 import ReadStore from '.';
 import { LoadError, State } from './Types';
 
-const fetchResource = <T>(decoder: Decoder<T>) =>
-  callAuthenticatedApi(resourceDecoder(decoder), {});
+const fetchResource = <T>(decoder: Decoder<T>) => callApi(resourceDecoder(decoder), {});
 
 export class ReadStoreReactions<T> extends ClassReactor<ReadStore<T>> {
   effects =
-    (store: ReadStore<T>) =>
+    ({ store }: { store: ReadStore<T> }) =>
     (state: State<T>): void => {
       switch (state.kind) {
         case 'waiting':

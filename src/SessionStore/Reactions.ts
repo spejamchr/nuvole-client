@@ -1,11 +1,5 @@
-import { callAuthenticatedApi } from '@/Appy';
+import { callApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
-import { authenticationStore } from '@/AuthenticationStore';
-import {
-  cachedUserSessionResourceDecoder,
-  userSessionResourceDecoder,
-} from '@/AuthenticationStore/Decoders';
-import { whenActiveSession } from '@/AuthenticationStore/Types';
 import { andTryR, fromJsonDecoderR } from '@/CooperExt';
 import { error } from '@/Logging';
 import Reactor from '@/Reactor';
@@ -14,7 +8,8 @@ import { getItem, removeItem, setItem } from '@/Storage';
 import { ok } from 'resulty';
 import Task from 'taskarian';
 import { sessionStore } from '.';
-import { ReadError } from './Types';
+import { cachedUserSessionResourceDecoder, userSessionResourceDecoder } from './Decoders';
+import { ReadError, whenActiveSession } from './Types';
 
 const sessionLocation = 'nuvSession';
 
@@ -32,9 +27,9 @@ const handleMissingSession = (err: ReadError): void => {
       assertNever(err);
   }
 };
-const refreshSession = callAuthenticatedApi(userSessionResourceDecoder, {});
+const refreshSession = callApi(userSessionResourceDecoder, {});
 
-const Reactions = Reactor<typeof sessionStore>((store) => (state) => {
+const Reactions = Reactor<typeof sessionStore>(({ store }) => (state) => {
   switch (state.kind) {
     case 'waiting':
       break;
@@ -55,7 +50,6 @@ const Reactions = Reactor<typeof sessionStore>((store) => (state) => {
       error('Error reading session from storage:', JSON.stringify(state.error));
       break;
     case 'with-session':
-      authenticationStore.authenticated(state.session);
       break;
     case 'writing-session':
       setItem(sessionLocation, JSON.stringify(state.session)).cata({

@@ -1,49 +1,42 @@
-import { findLink } from '@/Resource/Types';
-import { rootStore } from '@/RootStore';
+import Button from '@/Button';
+import StringField from '@/InputField/StringField';
+import WithInput from '@/InputField/WithInput';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { andTryR } from '@/CooperExt';
-import { authenticationStore } from '@/AuthenticationStore';
-import Button from '@/Button';
 import ErrorMsg from './ErrorMsg';
-import TextInput from '@/TextInput';
+import { AuthFormResource, AuthFormStore } from './Types';
 
-interface Props {}
+interface Props {
+  store: AuthFormStore;
+  resource: AuthFormResource;
+}
 
-const Form: React.FC<Props> = () => (
-  <form
-    className={`m-8 w-fit bg-gray-800 p-8`}
-    onSubmit={(e) => {
-      e.preventDefault();
-      rootStore.resource
-        .map((r) => r.links)
-        .cata(andTryR(findLink('authenticate')))
-        .do(authenticationStore.authenticating);
-    }}
-  >
-    <div className={`flex place-items-end justify-between`}>
-      <div className={`pb-4 pr-4 text-lg text-gray-200`}>Login</div>
-      <ErrorMsg />
-    </div>
-    <div className={`w-96`}>
-      <TextInput
-        label="Email"
-        value={authenticationStore.email}
-        onChange={authenticationStore.setEmail}
-        inputProps={{ disabled: !authenticationStore.editable }}
-      />
-      <TextInput
-        label="Password"
-        value={authenticationStore.password}
-        onChange={authenticationStore.setPassword}
-        inputProps={{ disabled: !authenticationStore.editable }}
-        password
-      />
-      <div className={'mt-4 flex flex-col'}>
-        <Button disabled={!authenticationStore.submittable}>Submit</Button>
+const Form: React.FC<Props> = ({ store, resource }) => {
+  return (
+    <form
+      className={`m-8 w-fit bg-gray-800 p-8`}
+      onSubmit={(e) => {
+        e.preventDefault();
+        store.submitting(resource);
+      }}
+    >
+      <div className={`flex place-items-end justify-between`}>
+        <div className={`pb-4 pr-4 text-lg text-gray-200`}>Login</div>
+        <ErrorMsg store={store} />
       </div>
-    </div>
-  </form>
-);
+      <div className={`w-96`}>
+        <WithInput inputs={resource.form.inputs} name="email" kind="string">
+          {(input) => <StringField input={input} />}
+        </WithInput>
+        <WithInput inputs={resource.form.inputs} name="password" kind="string">
+          {(input) => <StringField input={input} />}
+        </WithInput>
+        <div className={'mt-4 flex flex-col'}>
+          <Button disabled={!store.submittable}>Submit</Button>
+        </div>
+      </div>
+    </form>
+  );
+};
 
 export default observer(Form);

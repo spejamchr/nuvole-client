@@ -1,4 +1,4 @@
-import { UserSession } from '@/AuthenticationStore/Types';
+import { UserSession } from '@/SessionStore/Types';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import Display from './Display';

@@ -12,6 +12,7 @@ export const rels = [
   'create_user',
   'destroy',
   'entries',
+  'form',
   'journals',
   'parent',
   'self',
@@ -51,10 +52,13 @@ export interface BaseInput<K extends string> {
   access: Access;
 }
 
+export type StringInputType = 'email' | 'password' | 'search' | 'tel' | 'text' | 'url';
+
 export interface StringInput extends BaseInput<'string'> {
-  minLength: number;
-  maxLength: number;
+  minLength: Maybe<number>;
+  maxLength: Maybe<number>;
   value: string;
+  type: StringInputType;
 }
 
 export type StringInputApiValue = string;

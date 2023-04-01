@@ -1,6 +1,6 @@
-import { UserSession } from '@/AuthenticationStore/Types';
 import Button from '@/Button';
 import { sessionStore } from '@/SessionStore';
+import { UserSession } from '@/SessionStore/Types';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 
