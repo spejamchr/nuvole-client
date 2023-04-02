@@ -1,3 +1,4 @@
+import Home from '@/Home';
 import Journals from '@/Journals';
 import NotFound from '@/NotFound';
 import { CurrentUserResource } from '@/WithCurrentUser/Types';
@@ -14,7 +15,7 @@ export const authorizedRouter = ({ currentUser }: Props) =>
     [
       {
         path: '/',
-        element: <Journals currentUser={currentUser} />,
+        element: <Home currentUser={currentUser} />,
         ErrorBoundary: NotFound,
       },
       {

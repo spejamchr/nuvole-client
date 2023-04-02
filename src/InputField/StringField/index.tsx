@@ -1,7 +1,6 @@
 import { StringInput } from '@/Resource/Types';
 import TextInput from '@/TextInput';
 import { identity } from '@kofno/piper';
-import clsx from 'clsx';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
