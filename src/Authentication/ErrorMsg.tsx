@@ -26,6 +26,8 @@ const errorMessge = (state: SubmittingError<AuthenticationFormPayload>): string 
       }
     case 'network-error':
       return 'Network error: is there an internet connection?';
+    case 'validation-error':
+      return 'Validation error';
   }
 };
 

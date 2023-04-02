@@ -29,7 +29,15 @@ export interface Submitting<T> {
   resource: ResourceForm<T>;
 }
 
-export type SubmitError = MissingLink | AppyError | FailedDecoder;
+export interface ValidationError {
+  kind: 'validation-error';
+}
+
+export const validationError = (): ValidationError => ({
+  kind: 'validation-error',
+});
+
+export type SubmitError = ValidationError | MissingLink | AppyError | FailedDecoder;
 
 export interface SubmittingError<T> {
   kind: 'submitting-error';

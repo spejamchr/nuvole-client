@@ -1,6 +1,7 @@
 import { StringInput } from '@/Resource/Types';
 import TextInput from '@/TextInput';
 import { identity } from '@kofno/piper';
+import clsx from 'clsx';
 import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import * as React from 'react';
@@ -20,6 +21,7 @@ const StringField: React.FC<Props> = ({ input }) => (
       maxLength: input.maxLength.map<number | undefined>(identity).getOrElseValue(undefined),
       name: input.name,
       type: input.type,
+      required: input.access === 'required',
     }}
   />
 );

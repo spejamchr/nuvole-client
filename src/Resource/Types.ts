@@ -1,9 +1,10 @@
 import { resultToTask } from '@/CooperExt';
+import { validationError, ValidationError } from '@/FormStore/Types';
 import { findR } from '@execonline-inc/collections';
 import { Link as LinkR, Resource as ResourceR } from '@execonline-inc/resource';
 import { always, pipe } from '@kofno/piper';
 import { Maybe } from 'maybeasy';
-import { Result } from 'resulty';
+import { err, ok, Result } from 'resulty';
 
 export const rels = [
   'authenticate',
@@ -109,3 +110,34 @@ export type ResourceForm<T> = Resource<T> & HasApiForm;
 
 export const formToApiValues = <F extends HasApiForm>(hasForm: F): ApiFormValues =>
   hasForm.form.inputs.reduce((o, i) => ({ ...o, [i.name]: inputToApiValue(i) }), {});
+
+export const stringInputIsValid = ({ access, value, minLength, maxLength }: StringInput): boolean =>
+  (access !== 'required' || value.length > 0) &&
+  minLength.getOrElseValue(value.length) <= value.length &&
+  maxLength.getOrElseValue(value.length) >= value.length;
+
+export const dateInputIsValid = (input: DateInput): boolean =>
+  input.value
+    .map(
+      (date): boolean =>
+        input.min.getOrElseValue(date) <= date && input.max.getOrElseValue(date) >= date,
+    )
+    .getOrElse(() => input.access !== 'required');
+
+export const booleanInputIsValid = (_input: BooleanInput): boolean => true;
+
+export const inputIsValid = (input: Input): boolean => {
+  switch (input.kind) {
+    case 'string':
+      return stringInputIsValid(input);
+    case 'date':
+      return dateInputIsValid(input);
+    case 'boolean':
+      return booleanInputIsValid(input);
+  }
+};
+
+export const formToValidatedApiValues = <F extends HasApiForm>(
+  hasForm: F,
+): Result<ValidationError, ApiFormValues> =>
+  hasForm.form.inputs.every(inputIsValid) ? ok(formToApiValues(hasForm)) : err(validationError());

@@ -1,9 +1,16 @@
 import { callApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
+import { resultToTask } from '@/CooperExt';
 import { error } from '@/Logging';
 import { ClassReactor, EffectsProps } from '@/Reactor';
 import { resourceFormDecoder } from '@/Resource/Decoders';
-import { ApiFormValues, findLinkT, formToApiValues, Link, Resource } from '@/Resource/Types';
+import {
+  ApiFormValues,
+  findLinkT,
+  formToValidatedApiValues,
+  Link,
+  Resource,
+} from '@/Resource/Types';
 import Decoder from 'jsonous';
 import Task from 'taskarian';
 import FormStore from '.';
@@ -39,9 +46,13 @@ export class FormStoreReactions<F, S extends Resource<unknown>> extends ClassRea
         case 'ready':
           break;
         case 'submitting':
-          Task.succeed<SubmitError, ReadonlyArray<Link>>(state.resource.links)
-            .andThen(findLinkT(state.resource.form.actionRel))
-            .andThen(submitForm(submittingDecoder, formToApiValues(state.resource)))
+          Task.succeed<SubmitError, {}>({})
+            .assign('link', findLinkT(state.resource.form.actionRel)(state.resource.links))
+            .assign(
+              'values',
+              resultToTask(() => formToValidatedApiValues(state.resource)),
+            )
+            .andThen(({ link, values }) => submitForm(submittingDecoder, values)(link))
             .fork(store.submittingError, store.submitted);
           break;
         case 'submitting-error':

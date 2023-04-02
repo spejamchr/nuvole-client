@@ -17,7 +17,16 @@ const TextIput: React.FC<Props> = ({ label, value, onChange, inputProps }) => {
   return (
     <div className={`w-full p-1`}>
       <label className={`flex w-full items-center justify-between`}>
-        <span className={`w-full px-4 text-right`}>{label}</span>
+        <span className={`w-full px-4 text-right`}>
+          {label}
+          {inputProps?.required ? (
+            <abbr title="Required" className="pl-1 text-rose-200">
+              *
+            </abbr>
+          ) : (
+            <></>
+          )}
+        </span>
         <input
           className={clsx(
             `bg-gray-700 transition duration-200 disabled:bg-gray-600 disabled:text-gray-400`,
