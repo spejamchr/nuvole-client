@@ -40,7 +40,7 @@ const Authentication: React.FC<Props> = () => {
       />
       <RootStoreAuthLinkReactions store={rootStoreRef.current} authFormStore={storeRef.current} />
       <WriteSessionOnAuthenticationReaction store={storeRef.current} />
-      <Display store={storeRef.current} />
+      <Display store={storeRef.current} rootStore={rootStoreRef.current} />
     </>
   );
 };
