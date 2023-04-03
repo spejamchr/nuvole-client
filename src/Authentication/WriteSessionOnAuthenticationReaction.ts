@@ -13,7 +13,7 @@ const WriteSessionOnAuthenticationReaction = Reactor<AuthFormStore>(() => (state
     case 'submitting-error':
       break;
     case 'submitted':
-      sessionStore.writingSession(state.response);
+      sessionStore.writingSession(state.resource);
       break;
     default:
       assertNever(state);

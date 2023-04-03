@@ -7,9 +7,10 @@ import * as React from 'react';
 
 interface Props {
   input: StringInput;
+  className?: string;
 }
 
-const StringField: React.FC<Props> = ({ input }) => (
+const StringField: React.FC<Props> = ({ input, className }) => (
   <TextInput
     label={input.label}
     value={input.value}
@@ -21,7 +22,9 @@ const StringField: React.FC<Props> = ({ input }) => (
       name: input.name,
       type: input.type,
       required: input.access === 'required',
+      className,
     }}
+    errors={input.errors}
   />
 );
 

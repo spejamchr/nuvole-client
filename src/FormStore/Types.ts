@@ -19,14 +19,14 @@ export interface LoadingError {
   error: LoadError;
 }
 
-export interface Ready<T> {
+export interface Ready<F> {
   kind: 'ready';
-  resource: ResourceForm<T>;
+  resource: ResourceForm<F>;
 }
 
-export interface Submitting<T> {
+export interface Submitting<F> {
   kind: 'submitting';
-  resource: ResourceForm<T>;
+  resource: ResourceForm<F>;
 }
 
 export interface ValidationError {
@@ -39,15 +39,15 @@ export const validationError = (): ValidationError => ({
 
 export type SubmitError = ValidationError | MissingLink | AppyError | FailedDecoder;
 
-export interface SubmittingError<T> {
+export interface SubmittingError<F> {
   kind: 'submitting-error';
-  resource: ResourceForm<T>;
+  resource: ResourceForm<F>;
   error: SubmitError;
 }
 
 export interface Submitted<S extends Resource<unknown>> {
   kind: 'submitted';
-  response: S;
+  resource: S;
 }
 
 export type State<F, S extends Resource<unknown> = ResourceForm<F>> =
@@ -73,26 +73,26 @@ export const loadingError = (error: LoadError): LoadingError => ({
   error,
 });
 
-export const ready = <T>(resource: ResourceForm<T>): Ready<T> => ({
+export const ready = <F>(resource: ResourceForm<F>): Ready<F> => ({
   kind: 'ready',
   resource,
 });
 
-export const submitting = <T>(resource: ResourceForm<T>): Submitting<T> => ({
+export const submitting = <F>(resource: ResourceForm<F>): Submitting<F> => ({
   kind: 'submitting',
   resource,
 });
 
-export const submittingError = <T>(
-  resource: ResourceForm<T>,
+export const submittingError = <F>(
+  resource: ResourceForm<F>,
   error: SubmitError,
-): SubmittingError<T> => ({
+): SubmittingError<F> => ({
   kind: 'submitting-error',
   resource,
   error,
 });
 
-export const submitted = <S extends Resource<unknown>>(response: S): Submitted<S> => ({
+export const submitted = <S extends Resource<unknown>>(resource: S): Submitted<S> => ({
   kind: 'submitted',
-  response,
+  resource,
 });

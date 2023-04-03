@@ -14,6 +14,7 @@ interface Props {
 const Form: React.FC<Props> = ({ store, resource }) => {
   return (
     <form
+      noValidate
       className={`m-8 w-fit bg-gray-800 p-8`}
       onSubmit={(e) => {
         e.preventDefault();
@@ -24,7 +25,7 @@ const Form: React.FC<Props> = ({ store, resource }) => {
         <div className={`pb-4 pr-4 text-lg text-gray-200`}>Login</div>
         <ErrorMsg store={store} />
       </div>
-      <div className={`w-96`}>
+      <div className={`w-64`}>
         <WithInput inputs={resource.form.inputs} name="email" kind="string">
           {(input) => <StringField input={input} />}
         </WithInput>

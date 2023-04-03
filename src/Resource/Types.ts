@@ -1,6 +1,7 @@
 import { resultToTask } from '@/CooperExt';
 import { validationError, ValidationError } from '@/FormStore/Types';
 import { findR } from '@execonline-inc/collections';
+import { when } from '@execonline-inc/maybe-adapter';
 import { Link as LinkR, Resource as ResourceR } from '@execonline-inc/resource';
 import { always, pipe } from '@kofno/piper';
 import { Maybe } from 'maybeasy';
@@ -53,6 +54,7 @@ export interface BaseInput<K extends string> {
   name: string;
   label: string;
   access: Access;
+  errors: ReadonlyArray<string>;
 }
 
 export type StringInputType = 'email' | 'password' | 'search' | 'tel' | 'text' | 'url';
@@ -98,6 +100,10 @@ export type ApiFormValues = {
   [S in string]?: InputApiValue;
 };
 
+export type ApiFormRequestPayload = {
+  [S in string]?: ApiFormValues;
+};
+
 export interface ApiForm {
   name: string;
   actionRel: Rel;
@@ -113,33 +119,75 @@ export type ResourceForm<T> = Resource<T> & HasApiForm;
 export const formToApiValues = <F extends HasApiForm>(hasForm: F): ApiFormValues =>
   hasForm.form.inputs.reduce((o, i) => ({ ...o, [i.name]: inputToApiValue(i) }), {});
 
-export const stringInputIsValid = ({ access, value, minLength, maxLength }: StringInput): boolean =>
-  (access !== 'required' || value.length > 0) &&
-  minLength.getOrElseValue(value.length) <= value.length &&
-  maxLength.getOrElseValue(value.length) >= value.length;
+export const formToApiRequestPayload = <F extends HasApiForm>(
+  hasForm: F,
+): ApiFormRequestPayload => ({
+  [hasForm.form.name]: formToApiValues(hasForm),
+});
 
-export const dateInputIsValid = (input: DateInput): boolean =>
+const stringInputWithValidationErrorMessages = (input: StringInput): StringInput => {
+  const errors: Array<string> = [];
+  if (input.access === 'required' && input.value.length === 0) {
+    errors.push('is required');
+  }
+  input.minLength.do((min) => {
+    if (input.value.length < min) {
+      errors.push(`is too short (minimum is ${min} characters)`);
+    }
+  });
+  input.maxLength.do((max) => {
+    if (input.value.length > max) {
+      errors.push(`is too long (maximum is ${max} characters)`);
+    }
+  });
+  return { ...input, errors };
+};
+
+export const dateInputWithValidationErrorMessages = (input: DateInput): DateInput => {
+  const errors: Array<string> = [];
+
   input.value
-    .map(
-      (date): boolean =>
-        input.min.getOrElseValue(date) <= date && input.max.getOrElseValue(date) >= date,
-    )
-    .getOrElse(() => input.access !== 'required');
+    .do((value) => {
+      input.min
+        .andThen(when((min) => value < min))
+        .do((min) => errors.push(`must be greater than or equal to ${min}`));
+      input.max
+        .andThen(when((max) => value < max))
+        .do((max) => errors.push(`must be less than or equal to ${max}`));
+    })
+    .elseDo(() => {
+      if (input.access === 'required') {
+        errors.push('is required');
+      }
+    });
 
-export const booleanInputIsValid = (_input: BooleanInput): boolean => true;
+  return { ...input, errors };
+};
 
-export const inputIsValid = (input: Input): boolean => {
+export const booleanInputWithValidationErrorMessages = (input: BooleanInput): BooleanInput => input;
+
+export const inputWithValidationErrorMessages = (input: Input): Input => {
   switch (input.kind) {
     case 'string':
-      return stringInputIsValid(input);
+      return stringInputWithValidationErrorMessages(input);
     case 'date':
-      return dateInputIsValid(input);
+      return dateInputWithValidationErrorMessages(input);
     case 'boolean':
-      return booleanInputIsValid(input);
+      return booleanInputWithValidationErrorMessages(input);
   }
 };
 
+export const resourceWithValidationErrorMessages = <F extends HasApiForm>(hasForm: F): F => ({
+  ...hasForm,
+  form: {
+    ...hasForm.form,
+    inputs: hasForm.form.inputs.map(inputWithValidationErrorMessages),
+  },
+});
+
 export const formToValidatedApiValues = <F extends HasApiForm>(
   hasForm: F,
-): Result<ValidationError, ApiFormValues> =>
-  hasForm.form.inputs.every(inputIsValid) ? ok(formToApiValues(hasForm)) : err(validationError());
+): Result<ValidationError, ApiFormRequestPayload> =>
+  resourceWithValidationErrorMessages(hasForm).form.inputs.every((i) => i.errors.length === 0)
+    ? ok(formToApiRequestPayload(hasForm))
+    : err(validationError());

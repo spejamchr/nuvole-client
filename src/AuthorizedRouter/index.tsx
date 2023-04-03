@@ -1,3 +1,4 @@
+import EditProfile from '@/EditProfile';
 import Home from '@/Home';
 import Journals from '@/Journals';
 import NotFound from '@/NotFound';
@@ -21,6 +22,10 @@ export const authorizedRouter = ({ currentUser }: Props) =>
       {
         path: 'journals',
         element: <Journals currentUser={currentUser} />,
+      },
+      {
+        path: 'profile/edit',
+        element: <EditProfile currentUser={currentUser} />,
       },
     ],
     { basename: '/app' },

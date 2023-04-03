@@ -14,7 +14,9 @@ const Home: React.FC<Props> = ({ currentUser }) => (
     <h1>Welcome</h1>
     <ul>
       <WhenResult result={findLink('edit')(currentUser.links)}>
-        <li>Edit Profile</li>
+        <li>
+          <Link to="profile/edit">Edit Profile</Link>
+        </li>
       </WhenResult>
       <WhenResult result={findLink('journals')(currentUser.links)}>
         <li>

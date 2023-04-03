@@ -10,14 +10,16 @@ interface Props {
     React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
     'value' | 'onChange'
   >;
+  errors?: ReadonlyArray<string>;
 }
 
-const TextIput: React.FC<Props> = ({ label, value, onChange, inputProps }) => {
+const TextIput: React.FC<Props> = ({ label, value, onChange, inputProps, errors }) => {
+  errors ||= [];
   const { className, ...rest } = inputProps || {};
   return (
     <div className={`w-full p-1`}>
-      <label className={`flex w-full items-center justify-between`}>
-        <span className={`w-full px-4 text-right`}>
+      <label>
+        <div>
           {label}
           {inputProps?.required ? (
             <abbr title="Required" className="pl-1 text-rose-200">
@@ -26,10 +28,12 @@ const TextIput: React.FC<Props> = ({ label, value, onChange, inputProps }) => {
           ) : (
             <></>
           )}
-        </span>
+          <span className={`pl-3 text-xs text-rose-200`}>{errors.join(', ')}</span>
+        </div>
         <input
           className={clsx(
             `bg-gray-700 transition duration-200 disabled:bg-gray-600 disabled:text-gray-400`,
+            { 'border-rose-300': errors.length > 0 },
             className,
           )}
           value={value}

@@ -5,7 +5,6 @@ import ReadStoreReactions from '@/ReadStore/Reactions';
 import { rootPayloadDecoder } from '@/RootResource/Decoders';
 import { RootPayload } from '@/RootResource/Types';
 import { userSessionResourceDecoder } from '@/SessionStore/Decoders';
-import { UserSessionResource } from '@/SessionStore/Types';
 import { succeed } from 'jsonous';
 import { observer } from 'mobx-react';
 import * as React from 'react';
@@ -20,7 +19,7 @@ const rootHref = 'http://localhost:3000/root.json';
 
 const Authentication: React.FC<Props> = () => {
   const rootStoreRef = React.useRef<ReadStore<RootPayload>>(new ReadStore());
-  const storeRef = React.useRef<AuthFormStore>(new FormStore<{}, UserSessionResource>());
+  const storeRef = React.useRef<AuthFormStore>(new FormStore());
 
   React.useEffect(() => {
     rootStoreRef.current.loading({

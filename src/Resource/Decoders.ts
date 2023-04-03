@@ -35,7 +35,8 @@ export const baseInputDecoder = <K extends Input['kind']>(kind: K): Decoder<Base
     .assign('kind', field('kind', stringLiteral(kind)))
     .assign('name', field('name', string))
     .assign('label', field('label', string))
-    .assign('access', field('access', accessDecoder));
+    .assign('access', field('access', accessDecoder))
+    .assign('errors', field('errors', readonlyArray(string)));
 
 export const stringInputTypeDecoder: Decoder<StringInputType> = oneOf<StringInputType>([
   stringLiteral<StringInputType>('text'), // default first
