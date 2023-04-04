@@ -1,4 +1,4 @@
-import { readonlyArray } from '@/CooperExt';
+import { fromRaisableR, readonlyArray } from '@/CooperExt';
 import { explicitMaybe, stringLiteral } from '@execonline-inc/decoders';
 import { resourceDecoder as resourceDecoderR } from '@execonline-inc/resource';
 import { identity } from '@kofno/piper';
@@ -47,11 +47,21 @@ export const stringInputTypeDecoder: Decoder<StringInputType> = oneOf<StringInpu
   stringLiteral<StringInputType>('url'),
 ]);
 
+export const regexDecoder: Decoder<RegExp> = string.andThen(
+  (s) =>
+    new Decoder(() =>
+      fromRaisableR(() => new RegExp(s)).mapError(
+        () => `Expected a valid RegExp but received: ${s}`,
+      ),
+    ),
+);
+
 export const stringInputDecoder: Decoder<StringInput> = baseInputDecoder('string')
   .assign('minLength', field('min_length', explicitMaybe(number)))
   .assign('maxLength', field('max_length', explicitMaybe(number)))
   .assign('value', field('value', string))
-  .assign('type', field('type', stringInputTypeDecoder));
+  .assign('type', field('type', stringInputTypeDecoder))
+  .assign('pattern', field('pattern', explicitMaybe(regexDecoder)));
 
 export const booleanInputDecoder: Decoder<BooleanInput> = baseInputDecoder('boolean').assign(
   'value',

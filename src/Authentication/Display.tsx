@@ -8,7 +8,7 @@ import Form from './Form';
 import RootStoreDisplay from './RootStoreDisplay';
 import { AuthFormStore } from './Types';
 
-interface Props {
+export interface Props {
   store: AuthFormStore;
   rootStore: ReadStore<RootPayload>;
 }
@@ -24,7 +24,7 @@ const Display: React.FC<Props> = ({ store, rootStore }) => {
     case 'ready':
     case 'submitting':
     case 'submitting-error':
-      return <Form store={store} resource={store.state.resource} />;
+      return <Form store={store} resource={store.state.resource} rootStore={rootStore} />;
     case 'submitted':
       return <></>;
   }

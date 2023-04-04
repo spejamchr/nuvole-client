@@ -11,13 +11,13 @@ export const rels = [
   'authenticate',
   'block',
   'create',
-  'create_user',
   'destroy',
   'edit',
   'entries',
   'form',
   'journals',
   'new',
+  'new_user',
   'parent',
   'self',
   'subscribe',
@@ -64,6 +64,7 @@ export interface StringInput extends BaseInput<'string'> {
   maxLength: Maybe<number>;
   value: string;
   type: StringInputType;
+  pattern: Maybe<RegExp>;
 }
 
 export type StringInputApiValue = string;
@@ -138,6 +139,11 @@ const stringInputWithValidationErrorMessages = (input: StringInput): StringInput
   input.maxLength.do((max) => {
     if (input.value.length > max) {
       errors.push(`is too long (maximum is ${max} characters)`);
+    }
+  });
+  input.pattern.do((pattern) => {
+    if (!pattern.test(input.value)) {
+      errors.push(`does not match the expected pattern`);
     }
   });
   return { ...input, errors };

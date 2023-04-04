@@ -1,17 +1,24 @@
 import Button from '@/Button';
+import { andTryR } from '@/CooperExt';
 import StringField from '@/InputField/StringField';
 import WithInput from '@/InputField/WithInput';
+import ReadStore from '@/ReadStore';
+import { findLink } from '@/Resource/Types';
+import { RootPayload } from '@/RootResource/Types';
+import WhenResult from '@/WhenResult';
 import { observer } from 'mobx-react';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import ErrorMsg from './ErrorMsg';
 import { AuthFormResource, AuthFormStore } from './Types';
 
 interface Props {
   store: AuthFormStore;
   resource: AuthFormResource;
+  rootStore: ReadStore<RootPayload>;
 }
 
-const Form: React.FC<Props> = ({ store, resource }) => {
+const Form: React.FC<Props> = ({ store, resource, rootStore }) => {
   return (
     <form
       noValidate
@@ -36,6 +43,11 @@ const Form: React.FC<Props> = ({ store, resource }) => {
           <Button disabled={!store.submittable}>Submit</Button>
         </div>
       </div>
+      <WhenResult
+        result={rootStore.resource.map((r) => r.links).cata(andTryR(findLink('new_user')))}
+      >
+        <Link to="profile/new">New User</Link> {/* TODO: Create an Unauthorized Router component */}
+      </WhenResult>
     </form>
   );
 };

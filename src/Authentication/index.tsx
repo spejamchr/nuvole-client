@@ -8,9 +8,9 @@ import { userSessionResourceDecoder } from '@/SessionStore/Decoders';
 import { succeed } from 'jsonous';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import Display from './Display';
 import RootStoreAuthLinkReactions from './RootStoreAuthLinkReactions';
 import { AuthFormStore } from './Types';
+import UnauthenticatedRouter from './UnauthenticatedRouter';
 import WriteSessionOnAuthenticationReaction from './WriteSessionOnAuthenticationReaction';
 
 interface Props {}
@@ -40,7 +40,7 @@ const Authentication: React.FC<Props> = () => {
       />
       <RootStoreAuthLinkReactions store={rootStoreRef.current} authFormStore={storeRef.current} />
       <WriteSessionOnAuthenticationReaction store={storeRef.current} />
-      <Display store={storeRef.current} rootStore={rootStoreRef.current} />
+      <UnauthenticatedRouter store={storeRef.current} rootStore={rootStoreRef.current} />
     </>
   );
 };

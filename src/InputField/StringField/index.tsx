@@ -23,6 +23,7 @@ const StringField: React.FC<Props> = ({ input, className }) => (
       type: input.type,
       required: input.access === 'required',
       className,
+      pattern: input.pattern.map<string | undefined>((r) => r.source).getOrElseValue(undefined),
     }}
     errors={input.errors}
   />

@@ -1,1 +1,1 @@
-export type EditProfilePayload = {};
+export interface EditProfilePayload {}
