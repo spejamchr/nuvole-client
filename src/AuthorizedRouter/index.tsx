@@ -5,7 +5,7 @@ import NotFound from '@/NotFound';
 import { CurrentUserResource } from '@/WithCurrentUser/Types';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 interface Props {
   currentUser: CurrentUserResource;
@@ -26,6 +26,10 @@ export const authorizedRouter = ({ currentUser }: Props) =>
       {
         path: 'profile/edit',
         element: <EditProfile currentUser={currentUser} />,
+      },
+      {
+        path: 'profile/new',
+        element: <Navigate to="/" replace />,
       },
     ],
     { basename: '/app' },

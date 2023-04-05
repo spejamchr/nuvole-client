@@ -14,6 +14,7 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { newProfilePayloadDecoder } from './Decoders';
 import Display from './Display';
+import ProfileCreatedReaction from './ProfileCreatedReaction';
 import { NewProfileStore } from './Types';
 
 export interface Props {
@@ -43,6 +44,7 @@ const NewProfile: React.FC<Props> = ({ rootStore }) => {
                 fetchingDecoder={newProfilePayloadDecoder}
                 submittingDecoder={userSessionResourceDecoder}
               />
+              <ProfileCreatedReaction store={formStoreRef.current} />
               <Display store={formStoreRef.current} />
             </>
           )}
