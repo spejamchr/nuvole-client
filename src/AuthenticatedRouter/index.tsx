@@ -11,7 +11,7 @@ interface Props {
   currentUser: CurrentUserResource;
 }
 
-export const authorizedRouter = ({ currentUser }: Props) =>
+export const authenticatedRouter = ({ currentUser }: Props) =>
   createBrowserRouter(
     [
       {
@@ -35,8 +35,8 @@ export const authorizedRouter = ({ currentUser }: Props) =>
     { basename: '/app' },
   );
 
-const AuthorizedRouter: React.FC<Props> = (props) => (
-  <RouterProvider router={authorizedRouter(props)} />
+const AuthenticatedRouter: React.FC<Props> = (props) => (
+  <RouterProvider router={authenticatedRouter(props)} />
 );
 
-export default observer(AuthorizedRouter);
+export default observer(AuthenticatedRouter);

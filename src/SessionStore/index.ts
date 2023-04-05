@@ -142,7 +142,7 @@ class SessionStore {
       case 'reading-storage':
       case 'refreshing-session':
       case 'refreshing-session-error':
-        // The writingSession transition can happen at any time from the AuthenticationStore
+        // The writingSession transition can happen at any time during authentication
         this.state = writingSession(session);
         break;
       case 'writing-session':

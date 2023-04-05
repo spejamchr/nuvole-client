@@ -46,7 +46,7 @@ const Form: React.FC<Props> = ({ store, resource, rootStore }) => {
       <WhenResult
         result={rootStore.resource.map((r) => r.links).cata(andTryR(findLink('new_user')))}
       >
-        <Link to="profile/new">New User</Link> {/* TODO: Create an Unauthorized Router component */}
+        <Link to="profile/new">New User</Link>
       </WhenResult>
     </form>
   );
