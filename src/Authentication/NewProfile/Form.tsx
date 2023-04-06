@@ -24,7 +24,7 @@ const Form: React.FC<Props> = ({ store, resource }) => (
       <div className={`pb-4 pr-4 text-lg text-gray-200`}>New Profile</div>
     </div>
     <div>
-      <WithInput inputs={resource.form.inputs} name="email_address" kind="string">
+      <WithInput inputs={resource.form.inputs} name="email" kind="string">
         {(input) => <StringField input={input} />}
       </WithInput>
       <WithInput inputs={resource.form.inputs} name="password" kind="string">
