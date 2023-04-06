@@ -8,13 +8,13 @@ interface Props {
   link: Link;
 }
 
-class LoadFormWithLink<F, S extends Resource<unknown>> extends ClassReactor<
-  FormStore<F, S>,
+class LoadFormWithLink<FormPayload, Response extends Resource<unknown>> extends ClassReactor<
+  FormStore<FormPayload, Response>,
   Props
 > {
   effects =
-    ({ store, link }: EffectsProps<FormStore<F, S>, Props>) =>
-    (state: State<F, S>): void => {
+    ({ store, link }: EffectsProps<FormStore<FormPayload, Response>, Props>) =>
+    (state: State<FormPayload, Response>): void => {
       switch (state.kind) {
         case 'waiting':
           store.loading(link);

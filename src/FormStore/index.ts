@@ -17,8 +17,11 @@ import {
   submitted,
 } from './Types';
 
-export default class FormStore<F, S extends Resource<unknown> = ResourceForm<F>> {
-  public state: State<F, S>;
+export default class FormStore<
+  FormPayload,
+  Response extends Resource<unknown> = ResourceForm<FormPayload>,
+> {
+  public state: State<FormPayload, Response>;
 
   constructor() {
     this.state = waiting();
@@ -63,7 +66,7 @@ export default class FormStore<F, S extends Resource<unknown> = ResourceForm<F>>
     }
   };
 
-  ready = (resource: ResourceForm<F>) => {
+  ready = (resource: ResourceForm<FormPayload>) => {
     switch (this.state.kind) {
       case 'loading':
       case 'submitting':
@@ -81,7 +84,7 @@ export default class FormStore<F, S extends Resource<unknown> = ResourceForm<F>>
     }
   };
 
-  submitting = (resource: ResourceForm<F>) => {
+  submitting = (resource: ResourceForm<FormPayload>) => {
     switch (this.state.kind) {
       case 'ready':
       case 'submitting-error':
@@ -117,7 +120,7 @@ export default class FormStore<F, S extends Resource<unknown> = ResourceForm<F>>
     }
   };
 
-  submitted = (response: S) => {
+  submitted = (response: Response) => {
     switch (this.state.kind) {
       case 'submitting':
         this.state = submitted(response);
@@ -135,7 +138,10 @@ export default class FormStore<F, S extends Resource<unknown> = ResourceForm<F>>
     }
   };
 
-  get resource(): Result<Exclude<State<F, S>, Ready<F>>, ResourceForm<F>> {
+  get resource(): Result<
+    Exclude<State<FormPayload, Response>, Ready<FormPayload>>,
+    ResourceForm<FormPayload>
+  > {
     switch (this.state.kind) {
       case 'waiting':
       case 'loading':

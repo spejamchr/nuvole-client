@@ -17,21 +17,22 @@ import Task from 'taskarian';
 import FormStore from '.';
 import { LoadError, State, SubmitError, Submitting } from './Types';
 
-const fetchResource = <T>(decoder: Decoder<T>) => callApi(resourceFormDecoder(decoder), {});
+const fetchResource = <FormPayload>(decoder: Decoder<FormPayload>) =>
+  callApi(resourceFormDecoder(decoder), {});
 
-const submitForm = <T>(decoder: Decoder<T>, payload: ApiFormRequestPayload) =>
+const submitForm = <Response>(decoder: Decoder<Response>, payload: ApiFormRequestPayload) =>
   callApi(decoder, payload);
 
-interface Props<F, S extends Resource<unknown>> {
-  fetchingDecoder: Decoder<F>;
-  submittingDecoder: Decoder<S>;
+interface Props<FormPayload, Response extends Resource<unknown>> {
+  fetchingDecoder: Decoder<FormPayload>;
+  submittingDecoder: Decoder<Response>;
 }
 
 export const handleSubmitError =
-  <F, S extends Resource<unknown>>(
-    store: FormStore<F, S>,
-    state: Submitting<F>,
-    decoder: Decoder<F>,
+  <FormPayload, Response extends Resource<unknown>>(
+    store: FormStore<FormPayload, Response>,
+    state: Submitting<FormPayload>,
+    decoder: Decoder<FormPayload>,
   ) =>
   (err: SubmitError): void => {
     switch (err.kind) {
@@ -59,13 +60,17 @@ export const handleSubmitError =
     }
   };
 
-export class FormStoreReactions<F, S extends Resource<unknown>> extends ClassReactor<
-  FormStore<F, S>,
-  Props<F, S>
-> {
+export class FormStoreReactions<
+  FormPayload,
+  Response extends Resource<unknown>,
+> extends ClassReactor<FormStore<FormPayload, Response>, Props<FormPayload, Response>> {
   effects =
-    ({ store, fetchingDecoder, submittingDecoder }: EffectsProps<FormStore<F, S>, Props<F, S>>) =>
-    (state: State<F, S>): void => {
+    ({
+      store,
+      fetchingDecoder,
+      submittingDecoder,
+    }: EffectsProps<FormStore<FormPayload, Response>, Props<FormPayload, Response>>) =>
+    (state: State<FormPayload, Response>): void => {
       switch (state.kind) {
         case 'waiting':
           break;

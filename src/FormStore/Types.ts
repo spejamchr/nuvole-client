@@ -19,14 +19,14 @@ export interface LoadingError {
   error: LoadError;
 }
 
-export interface Ready<F> {
+export interface Ready<FormPayload> {
   kind: 'ready';
-  resource: ResourceForm<F>;
+  resource: ResourceForm<FormPayload>;
 }
 
-export interface Submitting<F> {
+export interface Submitting<FormPayload> {
   kind: 'submitting';
-  resource: ResourceForm<F>;
+  resource: ResourceForm<FormPayload>;
 }
 
 export interface ValidationError {
@@ -39,25 +39,25 @@ export const validationError = (): ValidationError => ({
 
 export type SubmitError = ValidationError | MissingLink | AppyError | FailedDecoder;
 
-export interface SubmittingError<F> {
+export interface SubmittingError<FormPayload> {
   kind: 'submitting-error';
-  resource: ResourceForm<F>;
+  resource: ResourceForm<FormPayload>;
   error: SubmitError;
 }
 
-export interface Submitted<S extends Resource<unknown>> {
+export interface Submitted<Response extends Resource<unknown>> {
   kind: 'submitted';
-  resource: S;
+  resource: Response;
 }
 
-export type State<F, S extends Resource<unknown> = ResourceForm<F>> =
+export type State<FormPayload, Response extends Resource<unknown> = ResourceForm<FormPayload>> =
   | Waiting
   | Loading
   | LoadingError
-  | Ready<F>
-  | Submitting<F>
-  | SubmittingError<F>
-  | Submitted<S>;
+  | Ready<FormPayload>
+  | Submitting<FormPayload>
+  | SubmittingError<FormPayload>
+  | Submitted<Response>;
 
 export const waiting = (): Waiting => ({
   kind: 'waiting',
@@ -73,26 +73,30 @@ export const loadingError = (error: LoadError): LoadingError => ({
   error,
 });
 
-export const ready = <F>(resource: ResourceForm<F>): Ready<F> => ({
+export const ready = <FormPayload>(resource: ResourceForm<FormPayload>): Ready<FormPayload> => ({
   kind: 'ready',
   resource,
 });
 
-export const submitting = <F>(resource: ResourceForm<F>): Submitting<F> => ({
+export const submitting = <FormPayload>(
+  resource: ResourceForm<FormPayload>,
+): Submitting<FormPayload> => ({
   kind: 'submitting',
   resource,
 });
 
-export const submittingError = <F>(
-  resource: ResourceForm<F>,
+export const submittingError = <FormPayload>(
+  resource: ResourceForm<FormPayload>,
   error: SubmitError,
-): SubmittingError<F> => ({
+): SubmittingError<FormPayload> => ({
   kind: 'submitting-error',
   resource,
   error,
 });
 
-export const submitted = <S extends Resource<unknown>>(resource: S): Submitted<S> => ({
+export const submitted = <Response extends Resource<unknown>>(
+  resource: Response,
+): Submitted<Response> => ({
   kind: 'submitted',
   resource,
 });
