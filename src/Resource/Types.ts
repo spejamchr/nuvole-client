@@ -19,11 +19,11 @@ export const rels = [
   'new',
   'new_user',
   'parent',
+  'profile',
   'self',
   'subscribe',
   'template:user',
   'update',
-  'user',
   'user_blocks',
   'user_subscriptions',
 ] as const;

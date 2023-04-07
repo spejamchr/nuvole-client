@@ -18,7 +18,7 @@ class WithCurrentUser extends React.Component<Props> {
   store = new ReadStore<CurrentUser>();
 
   componentDidMount(): void {
-    ok(this.props.session.links).andThen(findLink('user')).do(this.store.loading);
+    ok(this.props.session.links).andThen(findLink('profile')).do(this.store.loading);
   }
 
   render() {
