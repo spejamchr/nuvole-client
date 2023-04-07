@@ -2,6 +2,7 @@ import EditProfile from '@/EditProfile';
 import Home from '@/Home';
 import Journals from '@/Journals';
 import NotFound from '@/NotFound';
+import PublicKeys from '@/PublicKeys';
 import { CurrentUserResource } from '@/WithCurrentUser/Types';
 import { observer } from 'mobx-react';
 import * as React from 'react';
@@ -21,7 +22,7 @@ export const authenticatedRouter = ({ currentUser }: Props) =>
       },
       {
         path: 'journals',
-        element: <Journals currentUser={currentUser} />,
+        element: <Journals />,
       },
       {
         path: 'profile/edit',
@@ -30,6 +31,10 @@ export const authenticatedRouter = ({ currentUser }: Props) =>
       {
         path: 'profile/new',
         element: <Navigate to="/" replace />,
+      },
+      {
+        path: 'public-keys',
+        element: <PublicKeys />,
       },
     ],
     { basename: '/app' },

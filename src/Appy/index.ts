@@ -43,8 +43,7 @@ export const authHeader = (session: UserSessionResource): Header => ({
 });
 
 export const getAuthHeader = (): Result<NoCurrentSession, Header> =>
-  sessionStore
-    .session()
+  sessionStore.session
     .do(({ payload }) => triggerSessionRefreshIfExpiringSoon(payload))
     .map(authHeader);
 

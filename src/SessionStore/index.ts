@@ -240,7 +240,7 @@ class SessionStore {
     }
   };
 
-  session = (): Result<NoCurrentSession, UserSessionResource> => {
+  get session(): Result<NoCurrentSession, UserSessionResource> {
     switch (this.state.kind) {
       case 'waiting':
       case 'reading-storage':
@@ -254,7 +254,7 @@ class SessionStore {
       case 'refreshing-session-error':
         return whenActiveSession(this.state.session).mapError(noCurrentSession);
     }
-  };
+  }
 
   get sessionExpiration(): Result<NoCurrentSession, Date> {
     switch (this.state.kind) {

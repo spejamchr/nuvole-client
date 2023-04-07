@@ -1,11 +1,11 @@
 import Loading from '@/Loading';
 import LoadingError from '@/LoadingError';
 import ReadStore from '@/ReadStore';
+import ReadStoreDisplay from '@/ReadStore/Display';
 import { RootPayload } from '@/RootResource/Types';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import Form from './Form';
-import RootStoreDisplay from './RootStoreDisplay';
 import { AuthFormStore } from './Types';
 
 export interface Props {
@@ -16,7 +16,7 @@ export interface Props {
 const Display: React.FC<Props> = ({ store, rootStore }) => {
   switch (store.state.kind) {
     case 'waiting':
-      return <RootStoreDisplay store={rootStore} />;
+      return <ReadStoreDisplay store={rootStore} children={() => <></>} />;
     case 'loading':
       return <Loading />;
     case 'loading-error':

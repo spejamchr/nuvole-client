@@ -20,6 +20,7 @@ export const rels = [
   'new_user',
   'parent',
   'profile',
+  'public_keys',
   'self',
   'subscribe',
   'template:user',
