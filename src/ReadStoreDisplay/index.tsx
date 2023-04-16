@@ -1,9 +1,9 @@
+import { Ready } from '@/CommonStates/Types';
 import Loading from '@/Loading';
 import LoadingError from '@/LoadingError';
+import ReadStore from '@/ReadStore';
 import { observer } from 'mobx-react';
 import * as React from 'react';
-import ReadStore from '.';
-import { Ready } from './Types';
 
 interface Props<T> {
   store: ReadStore<T>;

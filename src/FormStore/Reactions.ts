@@ -1,5 +1,6 @@
 import { callApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
+import { LoadError } from '@/CommonStates/Types';
 import { resultToTask } from '@/CooperExt';
 import { error } from '@/Logging';
 import { ClassReactor, EffectsProps } from '@/Reactor';
@@ -15,7 +16,7 @@ import {
 import Decoder from 'jsonous';
 import Task from 'taskarian';
 import FormStore from '.';
-import { LoadError, State, SubmitError, Submitting } from './Types';
+import { State, SubmitError, Submitting } from './Types';
 
 const fetchResource = <FormPayload>(decoder: Decoder<FormPayload>) =>
   callApi(resourceFormDecoder(decoder), {});

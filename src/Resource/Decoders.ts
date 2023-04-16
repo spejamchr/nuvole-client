@@ -41,6 +41,7 @@ export const baseInputDecoder = <K extends Input['kind']>(kind: K): Decoder<Base
 export const stringInputTypeDecoder: Decoder<StringInputType> = oneOf<StringInputType>([
   stringLiteral<StringInputType>('text'), // default first
   stringLiteral<StringInputType>('email'),
+  stringLiteral<StringInputType>('hidden'),
   stringLiteral<StringInputType>('password'),
   stringLiteral<StringInputType>('search'),
   stringLiteral<StringInputType>('tel'),

@@ -39,7 +39,7 @@ const Form: React.FC<Props> = ({ store, resource, rootStore }) => {
         <WithInput inputs={resource.form.inputs} name="password" kind="string">
           {(input) => <StringField input={input} />}
         </WithInput>
-        <div className={'mt-4 flex flex-col'}>
+        <div className={'my-4 flex flex-col'}>
           <Button disabled={!store.submittable}>Submit</Button>
         </div>
       </div>

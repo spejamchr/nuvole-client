@@ -58,7 +58,7 @@ export interface BaseInput<K extends string> {
   errors: ReadonlyArray<string>;
 }
 
-export type StringInputType = 'email' | 'password' | 'search' | 'tel' | 'text' | 'url';
+export type StringInputType = 'email' | 'hidden' | 'password' | 'search' | 'tel' | 'text' | 'url';
 
 export interface StringInput extends BaseInput<'string'> {
   minLength: Maybe<number>;

@@ -1,6 +1,6 @@
 import ReadStore from '@/ReadStore';
-import ReadStoreDisplay from '@/ReadStore/Display';
 import ReadStoreReactions from '@/ReadStore/Reactions';
+import ReadStoreDisplay from '@/ReadStoreDisplay';
 import { findLink } from '@/Resource/Types';
 import { UserSessionResource } from '@/SessionStore/Types';
 import { observer } from 'mobx-react';

@@ -1,3 +1,4 @@
+import { Waiting } from '@/CommonStates/Types';
 import { FailedDecoder, fromBooleanR } from '@/CooperExt';
 import { Resource } from '@/Resource/Types';
 import { GetItemError, SetItemError } from '@/Storage';
@@ -23,10 +24,6 @@ export const whenActiveSession = (
 
 export const sessionExpiringSoon = ({ expiresAt, lifetimeInMs }: UserSession): boolean =>
   expiresAt.valueOf() - new Date().valueOf() < lifetimeInMs / 2;
-
-export interface Waiting {
-  kind: 'waiting';
-}
 
 export interface ReadingStorage {
   kind: 'reading-storage';
@@ -90,8 +87,6 @@ export type State =
   | WritingSessionError
   | RefreshingSession
   | RefreshingSessionError;
-
-export const waiting = (): Waiting => ({ kind: 'waiting' });
 
 export const readingStorage = (): ReadingStorage => ({ kind: 'reading-storage' });
 

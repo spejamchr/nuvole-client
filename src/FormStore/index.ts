@@ -1,21 +1,11 @@
 import { assertNever } from '@/AssertNever';
+import { loading, loadingError, ready, waiting } from '@/CommonStates';
+import { LoadError, Ready } from '@/CommonStates/Types';
 import { logMisfiredState } from '@/LogMisfiredState';
 import { Link, Resource, ResourceForm } from '@/Resource/Types';
 import { makeAutoObservable } from 'mobx';
 import { err, ok, Result } from 'resulty';
-import {
-  loadingError,
-  loading,
-  Ready,
-  ready,
-  State,
-  waiting,
-  LoadError,
-  submitting,
-  SubmitError,
-  submittingError,
-  submitted,
-} from './Types';
+import { State, submitting, SubmitError, submittingError, submitted } from './Types';
 
 export default class FormStore<
   FormPayload,

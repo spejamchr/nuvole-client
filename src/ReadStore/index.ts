@@ -1,9 +1,11 @@
 import { assertNever } from '@/AssertNever';
+import { loading, loadingError, ready, waiting } from '@/CommonStates';
+import { LoadError, Ready } from '@/CommonStates/Types';
 import { logMisfiredState } from '@/LogMisfiredState';
 import { Link, Resource } from '@/Resource/Types';
 import { makeAutoObservable } from 'mobx';
 import { err, ok, Result } from 'resulty';
-import { loadingError, loading, Ready, ready, State, waiting, LoadError } from './Types';
+import { State } from './Types';
 
 export default class ReadStore<T> {
   public state: State<T>;

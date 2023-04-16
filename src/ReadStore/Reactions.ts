@@ -1,5 +1,6 @@
 import { callApi } from '@/Appy';
 import { assertNever } from '@/AssertNever';
+import { LoadError } from '@/CommonStates/Types';
 import { error } from '@/Logging';
 import { ClassReactor, EffectsProps } from '@/Reactor';
 import { resourceDecoder } from '@/Resource/Decoders';
@@ -7,7 +8,7 @@ import { Link } from '@/Resource/Types';
 import Decoder from 'jsonous';
 import Task from 'taskarian';
 import ReadStore from '.';
-import { LoadError, State } from './Types';
+import { State } from './Types';
 
 const fetchResource = <T>(decoder: Decoder<T>) => callApi(resourceDecoder(decoder), {});
 

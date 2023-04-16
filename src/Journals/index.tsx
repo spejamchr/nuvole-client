@@ -1,7 +1,7 @@
 import { andTryR } from '@/CooperExt';
 import ReadStore from '@/ReadStore';
-import ReadStoreDisplay from '@/ReadStore/Display';
 import ReadStoreReactions from '@/ReadStore/Reactions';
+import ReadStoreDisplay from '@/ReadStoreDisplay';
 import { findLink } from '@/Resource/Types';
 import { sessionStore } from '@/SessionStore';
 import { observer } from 'mobx-react';

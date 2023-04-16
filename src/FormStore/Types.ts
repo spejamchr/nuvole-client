@@ -1,28 +1,7 @@
 import { AppyError } from '@/Appy';
+import { Loading, LoadingError, Ready, Waiting } from '@/CommonStates/Types';
 import { FailedDecoder } from '@/CooperExt';
-import { Link, MissingLink, Resource, ResourceForm } from '@/Resource/Types';
-import { NoCurrentSession } from '@/SessionStore/Types';
-
-export interface Waiting {
-  kind: 'waiting';
-}
-
-export interface Loading {
-  kind: 'loading';
-  link: Link;
-}
-
-export type LoadError = NoCurrentSession | AppyError | FailedDecoder;
-
-export interface LoadingError {
-  kind: 'loading-error';
-  error: LoadError;
-}
-
-export interface Ready<FormPayload> {
-  kind: 'ready';
-  resource: ResourceForm<FormPayload>;
-}
+import { MissingLink, Resource, ResourceForm } from '@/Resource/Types';
 
 export interface Submitting<FormPayload> {
   kind: 'submitting';
@@ -54,29 +33,10 @@ export type State<FormPayload, Response extends Resource<unknown> = ResourceForm
   | Waiting
   | Loading
   | LoadingError
-  | Ready<FormPayload>
+  | Ready<FormPayload, ResourceForm<FormPayload>>
   | Submitting<FormPayload>
   | SubmittingError<FormPayload>
   | Submitted<Response>;
-
-export const waiting = (): Waiting => ({
-  kind: 'waiting',
-});
-
-export const loading = (link: Link): Loading => ({
-  kind: 'loading',
-  link,
-});
-
-export const loadingError = (error: LoadError): LoadingError => ({
-  kind: 'loading-error',
-  error,
-});
-
-export const ready = <FormPayload>(resource: ResourceForm<FormPayload>): Ready<FormPayload> => ({
-  kind: 'ready',
-  resource,
-});
 
 export const submitting = <FormPayload>(
   resource: ResourceForm<FormPayload>,

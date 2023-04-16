@@ -1,10 +1,10 @@
 import FormStore from '@/FormStore';
 import FormStoreReactions from '@/FormStore/Reactions';
 import LoadFormWithLink from '@/LoadFormWithLink';
-import Loading from '@/Loading';
 import LoadingError from '@/LoadingError';
 import { error } from '@/Logging';
 import ReadStore from '@/ReadStore';
+import ReadStoreDisplay from '@/ReadStoreDisplay';
 import { findLink } from '@/Resource/Types';
 import { RootPayload } from '@/RootResource/Types';
 import { userSessionResourceDecoder } from '@/SessionStore/Decoders';
@@ -24,16 +24,12 @@ export interface Props {
 const NewProfile: React.FC<Props> = ({ rootStore }) => {
   const formStoreRef = React.useRef<NewProfileStore>(new FormStore());
 
-  switch (rootStore.state.kind) {
-    case 'waiting':
-    case 'loading':
-      return <Loading />;
-    case 'loading-error':
-      return <LoadingError />;
-    case 'ready':
-      return (
+  return (
+    <ReadStoreDisplay
+      store={rootStore}
+      children={(ready) => (
         <WhenResult
-          result={findLink('new_user')(rootStore.state.resource.links)}
+          result={findLink('new_user')(ready.resource.links)}
           onError={(e) => error('Error rendering NewProfile:', JSON.stringify(e))}
           error={always(<LoadingError />)}
           children={(link) => (
@@ -49,8 +45,9 @@ const NewProfile: React.FC<Props> = ({ rootStore }) => {
             </>
           )}
         />
-      );
-  }
+      )}
+    />
+  );
 };
 
 export default observer(NewProfile);

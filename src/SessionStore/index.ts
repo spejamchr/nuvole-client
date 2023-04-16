@@ -1,4 +1,5 @@
 import { assertNever } from '@/AssertNever';
+import { waiting } from '@/CommonStates';
 import { Nullish } from '@/CooperExt';
 import { logMisfiredState } from '@/LogMisfiredState';
 import { makeAutoObservable } from 'mobx';
@@ -14,7 +15,6 @@ import {
   refreshingSessionError,
   State,
   UserSessionResource,
-  waiting,
   whenActiveSession,
   withoutSession,
   withSession,
