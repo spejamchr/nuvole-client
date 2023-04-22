@@ -1,7 +1,7 @@
-import { Waiting } from '@/CommonStates/Types';
+import { Waiting, WritingStorage, WritingStorageError } from '@/CommonStates/Types';
 import { FailedDecoder, fromBooleanR } from '@/CooperExt';
 import { Resource } from '@/Resource/Types';
-import { GetItemError, SetItemError } from '@/Storage';
+import { GetItemError } from '@/Storage';
 import { Result } from 'resulty';
 
 export interface UserSession {
@@ -51,19 +51,6 @@ export interface WithSession {
   session: UserSessionResource;
 }
 
-export interface WritingSession {
-  kind: 'writing-session';
-  session: UserSessionResource;
-}
-
-export type WriteError = SetItemError;
-
-export interface WritingSessionError {
-  kind: 'writing-session-error';
-  session: UserSessionResource;
-  error: WriteError;
-}
-
 export interface RefreshingSession {
   kind: 'refreshing-session';
   session: UserSessionResource;
@@ -83,8 +70,8 @@ export type State =
   | ReadingStorageError
   | WithoutSession
   | WithSession
-  | WritingSession
-  | WritingSessionError
+  | WritingStorage<UserSessionResource>
+  | WritingStorageError<UserSessionResource>
   | RefreshingSession
   | RefreshingSessionError;
 
@@ -100,20 +87,6 @@ export const withoutSession = (): WithoutSession => ({ kind: 'without-session' }
 export const withSession = (session: UserSessionResource): WithSession => ({
   kind: 'with-session',
   session,
-});
-
-export const writingSession = (session: UserSessionResource): WritingSession => ({
-  kind: 'writing-session',
-  session,
-});
-
-export const writingSessionError = (
-  session: UserSessionResource,
-  error: WriteError,
-): WritingSessionError => ({
-  kind: 'writing-session-error',
-  session,
-  error,
 });
 
 export const refreshingSession = (session: UserSessionResource): RefreshingSession => ({

@@ -18,12 +18,14 @@ const Display: React.FC<Props> = ({ children }) => {
     case 'reading-storage-error':
     case 'without-session':
       return <Authentication />;
+    case 'writing-storage':
+    case 'writing-storage-error':
     case 'with-session':
-    case 'writing-session':
-    case 'writing-session-error':
     case 'refreshing-session':
     case 'refreshing-session-error':
-      return whenActiveSession(sessionStore.state.session)
+      const session =
+        'session' in sessionStore.state ? sessionStore.state.session : sessionStore.state.object;
+      return whenActiveSession(session)
         .map((session) => (
           <>
             {children(session)}

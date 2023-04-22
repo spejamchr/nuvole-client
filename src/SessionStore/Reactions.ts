@@ -27,6 +27,7 @@ const handleMissingSession = (err: ReadError): void => {
       assertNever(err);
   }
 };
+
 const refreshSession = callApi(userSessionResourceDecoder, {});
 
 const Reactions = Reactor<typeof sessionStore>(({ store }) => (state) => {
@@ -51,13 +52,13 @@ const Reactions = Reactor<typeof sessionStore>(({ store }) => (state) => {
       break;
     case 'with-session':
       break;
-    case 'writing-session':
-      setItem(sessionLocation, JSON.stringify(state.session)).cata({
+    case 'writing-storage':
+      setItem(sessionLocation, JSON.stringify(state.object)).cata({
         Ok: store.finishedWritingSession,
         Err: store.writingSessionError,
       });
       break;
-    case 'writing-session-error':
+    case 'writing-storage-error':
       error('Error writing session to storage:', JSON.stringify(state.error));
       break;
     case 'refreshing-session':

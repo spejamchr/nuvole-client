@@ -5,6 +5,8 @@ import { ResourceForm } from '@/Resource/Types';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { NewProfilePayload, NewProfileStore } from './Types';
+import WithClientKeyReaction from './WithClientKeyReaction';
+import { clientKeyStore } from '@/ClientKeyStore';
 
 interface Props {
   store: NewProfileStore;
@@ -20,6 +22,7 @@ const Form: React.FC<Props> = ({ store, resource }) => (
       store.submitting(resource);
     }}
   >
+    <WithClientKeyReaction store={clientKeyStore} newProfileForm={resource} />
     <div className={`flex place-items-end justify-between`}>
       <div className={`pb-4 pr-4 text-lg text-gray-200`}>New Profile</div>
     </div>
