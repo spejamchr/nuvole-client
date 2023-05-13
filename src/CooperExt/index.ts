@@ -66,3 +66,19 @@ export const resultToTask = <E, A>(fn: () => Result<E, A>): Task<E, A> =>
 
 export const readonlyArray = <T>(decoder: Decoder<T>): Decoder<ReadonlyArray<T>> =>
   array(decoder).map<ReadonlyArray<T>>(identity);
+
+export function mapResult<A, B>(
+  fn: (a: A) => Result<unknown, B>,
+): (arr: ReadonlyArray<A>) => Array<B>;
+export function mapResult<A, B>(fn: (a: A) => Result<unknown, B>, arr: ReadonlyArray<A>): Array<B>;
+export function mapResult<A, B>(fn: (a: A) => Result<unknown, B>, arr?: ReadonlyArray<A>) {
+  const doit = (arr: ReadonlyArray<A>): Array<B> =>
+    arr.reduce<Array<B>>(
+      (acc, a) =>
+        fn(a)
+          .map((b) => [...acc, b])
+          .getOrElseValue(acc),
+      [],
+    );
+  return arr ? doit(arr) : doit;
+}

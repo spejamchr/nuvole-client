@@ -1,3 +1,5 @@
+import { call } from '@/Call';
+import { mapResult } from '@/CooperExt';
 import EditProfile from '@/EditProfile';
 import Home from '@/Home';
 import Journals from '@/Journals';
@@ -37,7 +39,7 @@ const dynamicRouteCreators: ReadonlyArray<DynamicRouteCreator> = [
 ];
 
 const dynamicRoutes = (props: Props): Array<RouteObject> =>
-  dynamicRouteCreators.map((fn) => fn(props).getOrElseValue({}));
+  mapResult((fn) => fn(props), dynamicRouteCreators);
 
 const authenticatedRouter = (props: Props) =>
   createBrowserRouter(
