@@ -55,7 +55,7 @@ const Home: React.FC<Props> = ({ currentUser }) => {
         <li>
           <details>
             <summary>Name</summary>
-            {currentUser.payload.name.getOrElseValue('[None]')}
+            {currentUser.payload.name.getOrElseValue('')}
           </details>
         </li>
         <li>Joined at: {currentUser.payload.joinedAt.toLocaleString()}</li>
