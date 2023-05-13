@@ -41,10 +41,13 @@ export interface MissingLink {
 
 export const missingLink = (rel: Rel): MissingLink => ({ kind: 'missing-link', rel });
 
-export const findLink =
-  (rel: Rel) =>
-  (links: ReadonlyArray<Link>): Result<MissingLink, Link> =>
+export function findLink(rel: Rel): (links: ReadonlyArray<Link>) => Result<MissingLink, Link>;
+export function findLink(rel: Rel, links: ReadonlyArray<Link>): Result<MissingLink, Link>;
+export function findLink(rel: Rel, links?: ReadonlyArray<Link>) {
+  const doit = (links: ReadonlyArray<Link>): Result<MissingLink, Link> =>
     findR<Link>((link) => link.rel === rel)(links).mapError(() => missingLink(rel));
+  return links ? doit(links) : doit;
+}
 
 export const findLinkT = (rel: Rel) => pipe(findLink(rel), always, resultToTask);
 

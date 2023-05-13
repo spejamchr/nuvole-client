@@ -1,24 +1,21 @@
-import { andTryR } from '@/CooperExt';
 import ReadStore from '@/ReadStore';
 import ReadStoreReactions from '@/ReadStore/Reactions';
 import ReadStoreDisplay from '@/ReadStoreDisplay';
-import { findLink } from '@/Resource/Types';
-import { sessionStore } from '@/SessionStore';
+import { Link } from '@/Resource/Types';
 import { observer } from 'mobx-react';
 import * as React from 'react';
 import { publicKeysPayloadDecoder } from './Decoders';
 import { PublicKeysPayload } from './Types';
 
-interface Props {}
+interface Props {
+  link: Link;
+}
 
-const Journals: React.FC<Props> = () => {
+const Journals: React.FC<Props> = ({ link }) => {
   const store = React.useRef(new ReadStore<PublicKeysPayload>());
 
   React.useEffect(() => {
-    sessionStore.session
-      .map((s) => s.links)
-      .cata(andTryR(findLink('public_keys')))
-      .do(store.current.loading);
+    store.current.loading(link);
   }, []);
 
   return (
