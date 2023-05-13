@@ -33,6 +33,7 @@ const refreshSession = callApi(userSessionResourceDecoder, {});
 const Reactions = Reactor<typeof sessionStore>(({ store }) => (state) => {
   switch (state.kind) {
     case 'waiting':
+      store.readingStorage();
       break;
     case 'reading-storage':
       ok<ReadError, string>(sessionLocation)

@@ -10,10 +10,6 @@ interface Props {
 }
 
 const RequiresAuthentication: React.FC<Props> = ({ children }) => {
-  React.useEffect(() => {
-    sessionStore.readingStorage();
-  }, []);
-
   return (
     <>
       <SessionReactions store={sessionStore} />

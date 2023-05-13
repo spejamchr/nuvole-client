@@ -1,6 +1,6 @@
 import FormStore from '@/FormStore';
 import FormStoreReactions from '@/FormStore/Reactions';
-import LoadFormWithLink from '@/LoadFormWithLink';
+import { LoadingReaction } from '@/LoadingReaction';
 import { resourceFormDecoder } from '@/Resource/Decoders';
 import { Link } from '@/Resource/Types';
 import SubmittedToReadyReaction from '@/SubmittedToReadyReaction';
@@ -19,7 +19,7 @@ const EditProfile: React.FC<Props> = ({ link }) => {
 
   return (
     <>
-      <LoadFormWithLink store={formStoreRef.current} link={link} />
+      <LoadingReaction store={formStoreRef.current} link={link} />
       <FormStoreReactions
         store={formStoreRef.current}
         fetchingDecoder={editProfilePayloadDecoder}

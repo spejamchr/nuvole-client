@@ -1,13 +1,15 @@
+import { clientKeyStore } from '@/ClientKeyStore';
 import FormStore from '@/FormStore';
 import FormStoreReactions from '@/FormStore/Reactions';
-import LoadFormWithLink from '@/LoadFormWithLink';
 import LoadingError from '@/LoadingError';
+import { LoadingReaction } from '@/LoadingReaction';
 import { error } from '@/Logging';
 import ReadStore from '@/ReadStore';
 import ReadStoreDisplay from '@/ReadStoreDisplay';
 import { findLink } from '@/Resource/Types';
 import { RootPayload } from '@/RootResource/Types';
 import { userSessionResourceDecoder } from '@/SessionStore/Decoders';
+import WhenUsableSodium from '@/SodiumStore/WhenUsableSodium';
 import WhenResult from '@/WhenResult';
 import { always } from '@kofno/piper';
 import { observer } from 'mobx-react';
@@ -16,8 +18,6 @@ import { newProfilePayloadDecoder } from './Decoders';
 import Display from './Display';
 import ProfileCreatedReaction from './ProfileCreatedReaction';
 import { NewProfileStore } from './Types';
-import { clientKeyStore } from '@/ClientKeyStore';
-import WhenUsableSodium from '@/SodiumStore/WhenUsableSodium';
 
 export interface Props {
   rootStore: ReadStore<RootPayload>;
@@ -38,7 +38,7 @@ const NewProfile: React.FC<Props> = ({ rootStore }) => {
             error={always(<LoadingError />)}
             children={(link) => (
               <>
-                <LoadFormWithLink store={formStoreRef.current} link={link} />
+                <LoadingReaction store={formStoreRef.current} link={link} />
                 <FormStoreReactions
                   store={formStoreRef.current}
                   fetchingDecoder={newProfilePayloadDecoder}

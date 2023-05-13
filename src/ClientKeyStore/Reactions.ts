@@ -28,6 +28,7 @@ const handleMissingClientKey = (err: ReadError): void => {
 const Reactions = Reactor<typeof clientKeyStore>(({ store }) => (state) => {
   switch (state.kind) {
     case 'waiting':
+      store.readingStorage();
       break;
     case 'reading-storage':
       ok<ReadError, string>(clientKeyLocation)

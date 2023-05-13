@@ -8,6 +8,7 @@ import sodiumStore from '.';
 const Reactions = Reactor<typeof sodiumStore>(({ store }) => (state) => {
   switch (state.kind) {
     case 'waiting':
+      store.resolvingPromise();
       break;
     case 'resolving-promise':
       Task.fromPromise(() => libsodium.ready).fork(store.resolvingError, () =>

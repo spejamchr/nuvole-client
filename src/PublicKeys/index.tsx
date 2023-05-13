@@ -6,6 +6,7 @@ import { observer } from 'mobx-react';
 import * as React from 'react';
 import { publicKeysPayloadDecoder } from './Decoders';
 import { PublicKeysPayload } from './Types';
+import { LoadingReaction } from '@/LoadingReaction';
 
 interface Props {
   link: Link;
@@ -14,12 +15,9 @@ interface Props {
 const Journals: React.FC<Props> = ({ link }) => {
   const store = React.useRef(new ReadStore<PublicKeysPayload>());
 
-  React.useEffect(() => {
-    store.current.loading(link);
-  }, []);
-
   return (
     <>
+      <LoadingReaction store={store.current} link={link} />
       <ReadStoreReactions store={store.current} decoder={publicKeysPayloadDecoder} />
       <ReadStoreDisplay store={store.current}>
         {(state) => (

@@ -1,8 +1,7 @@
 import { reaction } from 'mobx';
 import * as React from 'react';
-import { useEffect } from 'react';
 
-interface HasState<State> {
+export interface HasState<State> {
   state: State;
 }
 
@@ -21,7 +20,9 @@ const Reactor =
     effects: Effects<Store, SpecificProps>,
   ): React.FC<EffectsProps<Store, SpecificProps>> =>
   (props) => {
-    useEffect(() => reaction(() => props.store.state, effects(props), { fireImmediately: true }));
+    React.useEffect(() =>
+      reaction(() => props.store.state, effects(props), { fireImmediately: true }),
+    );
     return <></>;
   };
 
@@ -34,9 +35,7 @@ export abstract class ClassReactor<
   abstract effects: Effects<Store, SpecificProps>;
 
   render() {
-    const Reactions = Reactor<Store, SpecificProps>(
-      (effects) => (props) => this.effects(effects)(props),
-    );
+    const Reactions = Reactor(this.effects);
     return <Reactions {...this.props} />;
   }
 }

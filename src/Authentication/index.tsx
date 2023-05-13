@@ -12,26 +12,27 @@ import RootStoreAuthLinkReactions from './RootStoreAuthLinkReactions';
 import { AuthFormStore } from './Types';
 import UnauthenticatedRouter from './UnauthenticatedRouter';
 import WriteSessionOnAuthenticationReaction from './WriteSessionOnAuthenticationReaction';
+import { Link } from '@/Resource/Types';
+import { LoadingReaction } from '@/LoadingReaction';
 
 interface Props {}
 
 const rootHref = 'http://localhost:3000/root.json';
 
+const rootLink: Link = {
+  rel: 'self',
+  href: rootHref,
+  method: 'get',
+  type: 'application/json',
+};
+
 const Authentication: React.FC<Props> = () => {
   const rootStoreRef = React.useRef<ReadStore<RootPayload>>(new ReadStore());
   const storeRef = React.useRef<AuthFormStore>(new FormStore());
 
-  React.useEffect(() => {
-    rootStoreRef.current.loading({
-      rel: 'self',
-      href: rootHref,
-      method: 'get',
-      type: 'application/json',
-    });
-  });
-
   return (
     <>
+      <LoadingReaction store={rootStoreRef.current} link={rootLink} />
       <ReadStoreReactions store={rootStoreRef.current} decoder={rootPayloadDecoder} />
       <FormStoreReactions
         store={storeRef.current}
