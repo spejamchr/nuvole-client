@@ -9,6 +9,6 @@ export const keyTypeDecoder: Decoder<KeyType> = oneOf([
 ]);
 
 export const clientKeyDecoder: Decoder<StringKeyPair> = succeed({})
-  .assign('keyType', field('type', keyTypeDecoder))
+  .assign('keyType', field('keyType', keyTypeDecoder))
   .assign('publicKey', field('publicKey', string))
   .assign('privateKey', field('privateKey', string));
